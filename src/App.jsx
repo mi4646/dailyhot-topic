@@ -1,5 +1,76 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
+// 自定义 Hook：管理主题状态 + localStorage + 系统检测
+function useDarkMode() {
+  // 获取系统默认值
+  const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  // 从 localStorage 读取用户之前保存的值
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode !== null) {
+      return savedMode === 'true';
+    }
+    return prefersDarkMode;
+  });
+
+  // 当用户点击切换时更新 localStorage
+  useEffect(() => {
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
+
+  return [darkMode, setDarkMode];
+}
+
+export default function App() {
+  const [darkMode, setDarkMode] = useDarkMode();
+
+  return (
+    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      {/* 头部 */}
+      <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
+        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold flex items-center">
+              <svg viewBox="0 0 24 24" className="w-8 h-8 mr-2">
+                <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+              </svg>
+              今日热榜
+            </h1>
+            <p className="mt-2 text-indigo-100">查看来自各大平台的热门资讯</p>
+          </div>
+
+          {/* 主题切换按钮 */}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="p-2 rounded-full hover:bg-white/10 transition-colors"
+            aria-label={darkMode ? "切换到浅色模式" : "切换到深色模式"}
+          >
+            {darkMode ? (
+              <svg viewBox="0 0 24 24" className="w-6 h-6">
+                <path fill="currentColor" d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3zm9-3h2c0 1.65-1.35 3-3 3v-2c.55 0 1-.45 1-1h1zm-1-4h2c0-1.65-1.35-3-3-3v2c-.55 0-1 .45-1 1h1zm-7 4h2c0 1.65-1.35 3-3 3v-2c.55 0 1-.45 1-1h1zm-7-4h2c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1h1zM12 5c1.65 0 3 1.35 3 3h-2c0-.55-.45-1-1-1s-1 .45-1 1H9c0-1.65 1.35-3 3-3zm0 14c-1.65 0-3-1.35-3-3h2c0 .55 .45 1 1 1s1-.45 1-1h2c0 1.65-1.35 3-3 3zm-7-4c0 1.65 1.35 3 3 3v-2c-.55 0-1-.45-1-1h-2zm10-8c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1h2z"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" className="w-6 h-6">
+                <path fill="currentColor" d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"/>
+              </svg>
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* 主体内容 */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {mockSources.map((source) => (
+            <SourceModule key={source.id} source={source} darkMode={darkMode} />
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
+
 // 中文模拟数据 - 具体平台来源
 const mockSources = [
   {
@@ -80,38 +151,7 @@ const mockSources = [
   },
 ];
 
-export default function App() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 头部 */}
-      <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl md:text-4xl font-bold flex items-center">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 mr-2">
-              <path
-                fill="currentColor"
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
-              />
-            </svg>
-            今日热榜
-          </h1>
-          <p className="mt-2 text-indigo-100">查看来自各大平台的热门资讯</p>
-        </div>
-      </header>
-
-      {/* 主体内容 */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {mockSources.map((source) => (
-            <SourceModule key={source.id} source={source} />
-          ))}
-        </div>
-      </main>
-    </div>
-  );
-}
-
-function SourceModule({ source }) {
+function SourceModule({ source, darkMode }) {
   const [visibleItems, setVisibleItems] = useState(7);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(Date.now());
@@ -130,10 +170,9 @@ function SourceModule({ source }) {
 
   const handleUpdate = () => {
     setIsUpdating(true);
-    // 模拟API请求延迟
     setTimeout(() => {
-      setVisibleItems(7); // 重置显示条数
-      setLastUpdated(Date.now()); // 更新时间
+      setVisibleItems(7);
+      setLastUpdated(Date.now());
       setIsUpdating(false);
     }, 800);
   };
@@ -148,7 +187,6 @@ function SourceModule({ source }) {
       if (!containerRef.current) return;
 
       const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-      // 滚动到底部附近时加载更多
       if (scrollHeight - scrollTop - clientHeight < 10) {
         loadMore();
       }
@@ -167,7 +205,11 @@ function SourceModule({ source }) {
   }, [visibleItems, loading]);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-xl min-w-[300px]">
+    <div
+      className={`rounded-xl shadow-lg overflow-hidden border ${
+        darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-100"
+      } transition-colors duration-300`}
+    >
       {/* 模块头部 */}
       <div
         className={`bg-gradient-to-r ${source.color} p-4 flex items-center text-white`}
@@ -179,11 +221,13 @@ function SourceModule({ source }) {
       {/* 内容区域 */}
       <div
         ref={containerRef}
-        className="max-h-[500px] overflow-y-auto p-4 custom-scrollbar"
+        className={`max-h-[500px] overflow-y-auto p-4 custom-scrollbar ${
+          darkMode ? "bg-gray-900" : ""
+        }`}
       >
         <div className="space-y-3">
           {source.items.slice(0, visibleItems).map((item) => (
-            <HotTopicItem key={item.id} item={item} />
+            <HotTopicItem key={item.id} item={item} darkMode={darkMode} />
           ))}
 
           {loading && (
@@ -201,16 +245,24 @@ function SourceModule({ source }) {
       </div>
 
       {/* 底部信息栏 */}
-      <div className="px-4 py-2 flex justify-between items-center border-t border-gray-100 bg-gray-50">
-        <div className="text-xs text-gray-500">
-          {formatUpdateTime(lastUpdated)}
-        </div>
+      <div
+        className={`px-4 py-2 flex justify-between items-center border-t ${
+          darkMode
+            ? "border-gray-700 bg-gray-900 text-gray-300"
+            : "border-gray-100 bg-gray-50 text-gray-500"
+        } transition-colors duration-300`}
+      >
+        <div className="text-xs">{formatUpdateTime(lastUpdated)}</div>
         <button
           onClick={handleUpdate}
           disabled={isUpdating}
-          className={`p-1 rounded-full ${
-            isUpdating ? "text-gray-400" : "text-gray-500 hover:text-indigo-600"
-          } transition-colors duration-200`}
+          className={`p-1 rounded-full transition-colors duration-200 ${
+            isUpdating
+              ? "text-gray-400"
+              : darkMode
+              ? "text-gray-300 hover:text-indigo-400"
+              : "text-gray-500 hover:text-indigo-600"
+          }`}
           title="刷新数据"
         >
           <svg viewBox="0 0 24 24" className="w-5 h-5">
@@ -232,14 +284,20 @@ function SourceModule({ source }) {
   );
 }
 
-function HotTopicItem({ item }) {
+function HotTopicItem({ item, darkMode }) {
   return (
-    <div className="group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-      <h3 className="font-semibold text-gray-800 line-clamp-2 group-hover:text-indigo-600 transition-colors duration-200">
+    <div
+      className={`group p-3 rounded-lg hover:${
+        darkMode ? "bg-gray-700" : "bg-gray-50"
+      } transition-colors duration-200`}
+    >
+      <h3
+        className={`font-semibold line-clamp-2 group-hover:text-indigo-600 transition-colors duration-200 ${
+          darkMode ? "text-gray-200" : "text-gray-800"
+        }`}
+      >
         {item.title}
       </h3>
-      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.summary}</p>
-      <div className="mt-2 text-xs text-gray-500">{item.time}</div>
     </div>
   );
 }
