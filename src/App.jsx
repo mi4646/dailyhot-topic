@@ -1,5 +1,6 @@
-import { useState, useEffect, showDetailModal } from "react";
-import DetailModal from "./DetailModal";
+import React, { useState, useEffect } from "react";
+import DetailModal from "./components/DetailModal";
+import SettingsModal from "./components/SettingsModal";
 
 const App = () => {
   const [theme, setTheme] = useState(
@@ -10,7 +11,7 @@ const App = () => {
   const [currentDetailSource, setCurrentDetailSource] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 模拟数据源
+  // 模拟热榜数据源
   const [hotData, setHotData] = useState([
     {
       source: "微博热搜",
@@ -304,6 +305,9 @@ const App = () => {
   ]);
 
   const [sortedSources, setSortedSources] = useState([...hotData]);
+  const [visibleSources, setVisibleSources] = useState(
+    hotData.map((d) => d.source)
+  );
 
   useEffect(() => {
     if (theme === "dark") {
@@ -313,44 +317,48 @@ const App = () => {
     }
   }, [theme]);
 
+  // 切换主题
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
   };
 
+  // 打开设置模态框
   const openSettingsModal = () => {
     setShowSettingsModal(true);
   };
 
+  // 关闭设置模态框
   const closeSettingsModal = () => {
     setShowSettingsModal(false);
   };
 
+  // 打开详情模态框
   const openDetailModal = (sourceName) => {
     setCurrentDetailSource(sourceName);
     setCurrentPage(1);
     setShowDetailModal(true);
   };
 
+  // 关闭详情模态框
   const closeDetailModal = () => {
     setShowDetailModal(false);
   };
 
-  const toggleVisibility = (source) => {
+  // 切换可见状态
+  const toggleVisibility = (sourceName) => {
     setHotData(
       hotData.map((d) =>
-        d.source === source ? { ...d, visible: !d.visible } : d
+        d.source === sourceName ? { ...d, visible: !d.visible } : d
       )
     );
   };
 
-  const ITEMS_PER_PAGE = 5;
-
+  // 分页逻辑
   const totalPages = currentDetailSource
     ? Math.ceil(
-        hotData.find((d) => d.source === currentDetailSource).items.length /
-          ITEMS_PER_PAGE
+        hotData.find((d) => d.source === currentDetailSource).items.length / 5
       )
     : 1;
 
@@ -368,6 +376,7 @@ const App = () => {
         <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center relative dark:text-gray-100">
           <i className="fas fa-fire-alt text-red-500 mr-3"></i>
           今日热榜
+          {/* 主题切换按钮 */}
           <button
             id="theme-toggle"
             onClick={toggleTheme}
@@ -379,6 +388,7 @@ const App = () => {
               <i className="fas fa-sun text-xl"></i>
             )}
           </button>
+          {/* 设置按钮 */}
           <button
             id="settings-button"
             onClick={openSettingsModal}
@@ -388,6 +398,7 @@ const App = () => {
           </button>
         </h1>
 
+        {/* 热榜模块列表 */}
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           id="hot-topics-container"
@@ -492,7 +503,7 @@ const HotTopicModule = ({ data, onMoreClick }) => {
               >
                 {idx + 1}
               </span>
-              <span className="flex-grow text-gray-700 dark:text-gray-300 text-base truncate">
+              <span className="flex-grow text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-base truncate">
                 {item.title}
               </span>
               <span className="ml-3 text-sm text-gray-500 flex-shrink-0">
@@ -522,122 +533,5 @@ const HotTopicModule = ({ data, onMoreClick }) => {
     </div>
   );
 };
-
-// 设置模态框组件
-const SettingsModal = ({
-  sources,
-  onClose,
-  sortedSources,
-  setSortedSources,
-  toggleVisibility,
-}) => {
-  const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  };
-
-  const onDragStart = (e, index) => {
-    e.dataTransfer.setData("draggedIndex", index);
-  };
-
-  const onDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const onDrop = (e, dropIndex) => {
-    const draggedIndex = parseInt(e.dataTransfer.getData("draggedIndex"));
-    const reordered = reorder(sortedSources, draggedIndex, dropIndex);
-    setSortedSources(reordered);
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
-          onClick={onClose}
-        >
-          <i className="fas fa-times"></i>
-        </button>
-        <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 flex items-center">
-          <i className="fas fa-cog mr-3 text-4xl"></i>设置
-        </h2>
-
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-200">
-            榜单排序
-          </h3>
-          <div className="space-y-2" id="sortable-list">
-            {sortedSources.map((source, index) => (
-              <div
-                key={source.source}
-                draggable
-                onDragStart={(e) => onDragStart(e, index)}
-                onDragOver={onDragOver}
-                onDrop={(e) => onDrop(e, index)}
-                className="draggable-item"
-              >
-                <span>{source.source}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-200">
-            榜单显示
-          </h3>
-          <div className="space-y-2" id="visibility-list">
-            {sources.map((source) => (
-              <label
-                key={source.source}
-                className="flex items-center space-x-2"
-              >
-                <input
-                  type="checkbox"
-                  checked={source.visible}
-                  onChange={() => toggleVisibility(source.source)}
-                  className="form-checkbox h-5 w-5 text-blue-600"
-                />
-                <span>{source.source}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex justify-end space-x-3">
-          <button
-            className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-            onClick={onClose}
-          >
-            保存设置
-          </button>
-          <button
-            className="px-5 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors duration-200"
-            onClick={onClose}
-          >
-            重置
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// 详情模态框组件
-{
-  showDetailModal && currentDetailSource && (
-    <DetailModal
-      source={hotData.find((d) => d.source === currentDetailSource)}
-      currentPage={currentPage}
-      totalPages={totalPages}
-      onNextPage={goToNextPage}
-      onPrevPage={goToPrevPage}
-      onClose={() => setShowDetailModal(false)} // 这是关键
-    />
-  );
-}
 
 export default App;
