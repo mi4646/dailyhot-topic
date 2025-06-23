@@ -354,28 +354,6 @@ button[disabled] {
   justify-content: space-between;
 }
 
-/* 圆角与阴影 */
-.rounded-full {
-  border-radius: 9999px;
-}
-
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.rounded-xl {
-  border-radius: 0.75rem;
-}
-
-.shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.hover\:shadow-xl:hover {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
 
 /* 卡片热点标题优化 */
 .hot-topic-item h3 {
@@ -422,4 +400,64 @@ button[disabled] {
     max-height: 2.6em;
     line-height: 1.3;
   }
+}
+
+
+/* 默认状态下隐藏滚动条 */
+.custom-scrollbar {
+  scrollbar-width: none;
+  overflow-y: hidden;
+}
+
+/* 鼠标悬停时显示滚动条 */
+.source-module:hover .custom-scrollbar {
+  scrollbar-width: thin;
+  overflow-y: auto;
+}
+
+.source-module:hover .custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  visibility: visible;
+  background: transparent;
+}
+
+.source-module:hover .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+  min-height: 20px;
+}
+
+.source-module:hover .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* 滚动条基础样式（仅在悬停时生效） */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: transparent;
+}
+
+/* 默认颜色变量（浅色模式） */
+:root {
+  --scrollbar-thumb: #888;
+  --scrollbar-thumb-hover: #555;
+  --hover-color: #6366f1;
+  --skeleton-bg: #f1f1f1;
+}
+
+/* 暗黑模式覆盖 */
+.dark-mode {
+  --scrollbar-thumb: #666;
+  --scrollbar-thumb-hover: #999;
+  --hover-color: #a5b4fc;
+  --skeleton-bg: #374151;
 }

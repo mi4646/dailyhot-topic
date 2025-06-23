@@ -134,75 +134,77 @@ function SourceModule({ source, darkMode }) {
         darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-100"
       } transition-colors duration-300`}
     >
-      {/* 模块头部 */}
-      <div
-        className={`bg-gradient-to-r ${source.color} p-4 flex items-center text-white`}
-      >
-        <div className="mr-3">{source.icon}</div>
-        <h2 className="text-xl font-bold">{source.name}</h2>
-      </div>
-
-      {/* 内容区域 */}
-      <div
-        ref={containerRef}
-        className="max-h-[500px] overflow-y-auto p-4 custom-scrollbar"
-      >
-        <div className="space-y-2">
-          {source.items.slice(0, visibleItems).map((item) => (
-            <HotTopicItem key={item.id} item={item} darkMode={darkMode} />
-          ))}
-
-          {/* 加载动画 */}
-          {loading && (
-            <div className="flex justify-center py-4">
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-300"></div>
-            </div>
-          )}
-
-          {/* 已加载全部 */}
-          {visibleItems >= 10 && (
-            <div className="text-center text-gray-500 py-2 text-sm">
-              已加载全部内容
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 底部信息栏 */}
-      <div
-        className={`px-4 py-2 flex justify-between items-center border-t ${
-          darkMode
-            ? "border-gray-700 bg-gray-900 text-gray-300"
-            : "border-gray-100 bg-gray-50 text-gray-500"
-        } transition-colors duration-300`}
-      >
-        <div className="text-xs">{formatUpdateTime(lastUpdated)}</div>
-        <button
-          onClick={handleUpdate}
-          disabled={isUpdating}
-          className={`p-1 rounded-full transition-colors duration-200 ${
-            isUpdating
-              ? "text-gray-400"
-              : darkMode
-              ? "text-gray-300 hover:text-indigo-400"
-              : "text-gray-500 hover:text-indigo-600"
-          }`}
-          title="刷新数据"
+      <div className="source-module">
+        {/* 模块头部 */}
+        <div
+          className={`bg-gradient-to-r ${source.color} p-4 flex items-center text-white`}
         >
-          <svg viewBox="0 0 24 24" className="w-5 h-5">
-            {isUpdating ? (
-              <path
-                fill="currentColor"
-                d="M12 4v4l3 3m-3-7a9 9 0 109 9h-2a7 7 0 11-7-7z"
-              />
-            ) : (
-              <path
-                fill="currentColor"
-                d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.77L12 11h8V3l-2.35 2.35z"
-              />
+          <div className="mr-3">{source.icon}</div>
+          <h2 className="text-xl font-bold">{source.name}</h2>
+        </div>
+
+        {/* 内容区域 */}
+        <div
+          ref={containerRef}
+          className="max-h-[500px] overflow-y-auto p-4 custom-scrollbar"
+        >
+          <div className="space-y-2">
+            {source.items.slice(0, visibleItems).map((item) => (
+              <HotTopicItem key={item.id} item={item} darkMode={darkMode} />
+            ))}
+
+            {/* 加载动画 */}
+            {loading && (
+              <div className="flex justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-300"></div>
+              </div>
             )}
-          </svg>
-        </button>
+
+            {/* 已加载全部 */}
+            {visibleItems >= 10 && (
+              <div className="text-center text-gray-500 py-2 text-sm">
+                已加载全部内容
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 底部信息栏 */}
+        <div
+          className={`px-4 py-2 flex justify-between items-center border-t ${
+            darkMode
+              ? "border-gray-700 bg-gray-900 text-gray-300"
+              : "border-gray-100 bg-gray-50 text-gray-500"
+          } transition-colors duration-300`}
+        >
+          <div className="text-xs">{formatUpdateTime(lastUpdated)}</div>
+          <button
+            onClick={handleUpdate}
+            disabled={isUpdating}
+            className={`p-1 rounded-full transition-colors duration-200 ${
+              isUpdating
+                ? "text-gray-400"
+                : darkMode
+                ? "text-gray-300 hover:text-indigo-400"
+                : "text-gray-500 hover:text-indigo-600"
+            }`}
+            title="刷新数据"
+          >
+            <svg viewBox="0 0 24 24" className="w-5 h-5">
+              {isUpdating ? (
+                <path
+                  fill="currentColor"
+                  d="M12 4v4l3 3m-3-7a9 9 0 109 9h-2a7 7 0 11-7-7z"
+                />
+              ) : (
+                <path
+                  fill="currentColor"
+                  d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.77L12 11h8V3l-2.35 2.35z"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
