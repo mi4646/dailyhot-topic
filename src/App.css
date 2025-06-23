@@ -1,19 +1,45 @@
-/* 自定义滚动条样式 */
+/* 全局基础样式 */
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+}
+
+/* 滚动条样式 */
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox 滚动条宽度 */
+  scrollbar-color: var(--scrollbar-thumb) transparent; /* Firefox 滑块颜色 + 透明轨道 */
+}
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 8px; /* 垂直滚动条宽度 */
+  height: 8px; /* 水平滚动条高度 */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent; /* 轨道背景透明 */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
+  min-height: 20px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* 默认浅色模式颜色 */
+:root {
+  --scrollbar-thumb: #888; /* 滑块默认颜色（浅色模式） */
+  --scrollbar-thumb-hover: #555; /* 滑块悬停颜色（浅色模式） */
+}
+
+/* 暗黑模式颜色覆盖 */
+.dark-mode {
+  --scrollbar-thumb: #666; /* 暗黑模式滑块颜色 */
+  --scrollbar-thumb-hover: #999; /* 暗黑模式悬停颜色 */
 }
 
 /* 行内省略文本 */
@@ -24,40 +50,106 @@
   overflow: hidden;
 }
 
-
-/* 全局滚动条样式（默认浅色模式） */
-.custom-scrollbar {
-  scrollbar-width: thin; /* Firefox 滚动条宽度 */
-  scrollbar-color: #888 #f1f1f1; /* 浅色模式下 Firefox 的默认颜色 */
+/* 主体内容样式 */
+.container {
+  max-width: 1440px; /* 适配大屏幕 */
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+/* 卡片样式 */
+.source-module {
+  transition: all 0.3s ease;
 }
 
-/* 浅色模式滚动条样式（默认） */
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.source-module h2 {
+  margin: 0;
 }
 
-/* 暗黑模式滚动条样式 */
-.dark-mode .custom-scrollbar {
-  scrollbar-color: #666 #222; /* 暗黑模式下 Firefox 的滚动条颜色 */
+/* 头部样式 */
+header {
+  padding: 1rem 0;
 }
-.dark-mode .custom-scrollbar::-webkit-scrollbar-track {
-  background: #222;
+
+header h1 {
+  gap: 0.5rem; /* 图标与文字间距 */
 }
+
+/* 热点条目样式 */
+.hot-topic-item {
+  cursor: pointer;
+}
+
+.hot-topic-item h3 {
+  margin: 0;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* 暗黑模式全局覆盖 */
+.dark-mode {
+  background-color: #1a1a1a;
+  color: white;
+}
+
 .dark-mode .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #666;
-  border-radius: 3px;
 }
+
 .dark-mode .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
+
+/* 细节优化 */
+svg {
+  transition: fill 0.2s ease;
+}
+
+button svg:hover {
+  fill: var(--hover-color, #6366f1);
+}
+
+/* 空白占位符样式（用于加载动画） */
+.loading-skeleton {
+  background-color: var(--skeleton-bg, #f1f1f1);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* 错误/空状态样式 */
+.empty-state {
+  padding: 2rem 0;
+  text-align: center;
+  color: #6b7280;
+}
+
+.error-state {
+  padding: 2rem 0;
+  text-align: center;
+  color: #ef4444;
+}
+
+/* 交互反馈 */
+button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+button[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
