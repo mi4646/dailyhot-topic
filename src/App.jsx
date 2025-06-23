@@ -147,7 +147,7 @@ function SourceModule({ source, darkMode }) {
         ref={containerRef}
         className="max-h-[500px] overflow-y-auto p-4 custom-scrollbar"
       >
-        <div className="space-y-3">
+        <div className="space-y-2">
           {source.items.slice(0, visibleItems).map((item) => (
             <HotTopicItem key={item.id} item={item} darkMode={darkMode} />
           ))}
