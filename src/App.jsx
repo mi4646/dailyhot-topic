@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import HotTopicModule from "./components/HotTopicModule";
 import DetailModal from "./components/DetailModal";
 import SettingsModal from "./components/SettingsModal";
 
@@ -11,7 +12,7 @@ const App = () => {
   const [currentDetailSource, setCurrentDetailSource] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // 模拟热榜数据源
+  // 模拟数据源
   const [hotData, setHotData] = useState([
     {
       source: "微博热搜",
@@ -78,26 +79,6 @@ const App = () => {
           title: "全球气候变化应对",
           hot: "85.0万",
           summary: "国际社会共同探讨应对气候变化的策略和行动。",
-        },
-        {
-          title: "文化遗产保护与传承",
-          hot: "80.0万",
-          summary: "加强文化遗产保护，传承优秀传统文化。",
-        },
-        {
-          title: "乡村振兴战略实施",
-          hot: "75.0万",
-          summary: "乡村振兴战略深入推进，农村面貌焕然一新。",
-        },
-        {
-          title: "科技创新驱动发展",
-          hot: "70.0万",
-          summary: "科技创新成为推动经济社会发展的重要引擎。",
-        },
-        {
-          title: "健康生活新理念",
-          hot: "65.0万",
-          summary: "倡导健康生活方式，提升全民健康水平。",
         },
       ],
     },
@@ -305,9 +286,24 @@ const App = () => {
   ]);
 
   const [sortedSources, setSortedSources] = useState([...hotData]);
-  const [visibleSources, setVisibleSources] = useState(
-    hotData.map((d) => d.source)
+
+  const currentSourceData = hotData.find(
+    (d) => d.source === currentDetailSource
   );
+  const items = currentSourceData?.items || [];
+  const totalPages = Math.ceil(items.length / 5) || 1;
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
 
   useEffect(() => {
     if (theme === "dark") {
@@ -346,28 +342,13 @@ const App = () => {
     setShowDetailModal(false);
   };
 
-  // 切换可见状态
+  // 切换可见性
   const toggleVisibility = (sourceName) => {
     setHotData(
       hotData.map((d) =>
         d.source === sourceName ? { ...d, visible: !d.visible } : d
       )
     );
-  };
-
-  // 分页逻辑
-  const totalPages = currentDetailSource
-    ? Math.ceil(
-        hotData.find((d) => d.source === currentDetailSource).items.length / 5
-      )
-    : 1;
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const goToPrevPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
   return (
@@ -398,7 +379,7 @@ const App = () => {
           </button>
         </h1>
 
-        {/* 热榜模块列表 */}
+        {/* 热榜模块容器 */}
         <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           id="hot-topics-container"
@@ -429,7 +410,7 @@ const App = () => {
       {/* 详情模态框 */}
       {showDetailModal && currentDetailSource && (
         <DetailModal
-          source={hotData.find((d) => d.source === currentDetailSource)}
+          source={currentSourceData}
           currentPage={currentPage}
           totalPages={totalPages}
           onNextPage={goToNextPage}
@@ -437,99 +418,6 @@ const App = () => {
           onClose={closeDetailModal}
         />
       )}
-    </div>
-  );
-};
-
-// 单个热榜模块组件
-const HotTopicModule = ({ data, onMoreClick }) => {
-  const [itemsToShow, setItemsToShow] = useState(15);
-  const [isLoading, setIsLoading] = useState(false);
-  const [updateTime, setUpdateTime] = useState(new Date().toLocaleTimeString());
-
-  const handleScroll = (e) => {
-    const listDiv = e.target;
-    const { scrollTop, scrollHeight, clientHeight } = listDiv;
-
-    if (
-      !isLoading &&
-      scrollTop + clientHeight >= scrollHeight - 50 &&
-      itemsToShow < data.items.length
-    ) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setItemsToShow((prev) => Math.min(data.items.length, prev + 10));
-        setIsLoading(false);
-      }, 500);
-    }
-  };
-
-  const refreshList = () => {
-    setUpdateTime(new Date().toLocaleTimeString());
-    setItemsToShow(15);
-  };
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full transform transition-transform duration-300 hover:scale-105 hover:shadow-xl relative overflow-hidden">
-      <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
-          <i className={`${data.icon} mr-3 text-3xl`}></i>
-          {data.source}
-        </h2>
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            onMoreClick();
-          }}
-          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center"
-        >
-          更多 <i className="fas fa-arrow-right ml-1 text-xs"></i>
-        </a>
-      </div>
-
-      <div
-        onScroll={handleScroll}
-        className="flex-grow overflow-y-auto pr-2 hot-list-scroll"
-        style={{ maxHeight: "400px" }}
-      >
-        <ol className="space-y-3">
-          {data.items.slice(0, itemsToShow).map((item, idx) => (
-            <li key={idx} className="flex items-center group">
-              <span
-                className={`font-bold text-lg mr-3 w-6 text-center ${
-                  idx < 3 ? "text-red-500" : "text-gray-500"
-                }`}
-              >
-                {idx + 1}
-              </span>
-              <span className="flex-grow text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-base truncate">
-                {item.title}
-              </span>
-              <span className="ml-3 text-sm text-gray-500 flex-shrink-0">
-                <i className="fas fa-fire text-orange-400 mr-1"></i>
-                {item.hot}
-              </span>
-            </li>
-          ))}
-        </ol>
-        {isLoading && (
-          <div className="text-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100 mx-auto"></div>
-            <p className="text-gray-500 text-sm mt-2">加载中...</p>
-          </div>
-        )}
-      </div>
-
-      <div className="mt-4 pt-3 border-t border-gray-200 flex items-center justify-between text-sm text-gray-500">
-        <span>更新于: {updateTime}</span>
-        <button
-          onClick={refreshList}
-          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors duration-200 flex items-center"
-        >
-          <i className="fas fa-sync-alt mr-2"></i>刷新
-        </button>
-      </div>
     </div>
   );
 };
