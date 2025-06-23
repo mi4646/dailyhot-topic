@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, showDetailModal } from "react";
+import DetailModal from "./DetailModal";
 
 const App = () => {
   const [theme, setTheme] = useState(
@@ -302,9 +303,6 @@ const App = () => {
     },
   ]);
 
-  const [visibleSources, setVisibleSources] = useState(
-    hotData.map((d) => d.source)
-  );
   const [sortedSources, setSortedSources] = useState([...hotData]);
 
   useEffect(() => {
@@ -345,11 +343,6 @@ const App = () => {
         d.source === source ? { ...d, visible: !d.visible } : d
       )
     );
-  };
-
-  const handleSortEnd = (newOrder) => {
-    const reordered = newOrder.map((index) => hotData[index]);
-    setSortedSources(reordered);
   };
 
   const ITEMS_PER_PAGE = 5;
@@ -634,81 +627,17 @@ const SettingsModal = ({
 };
 
 // 详情模态框组件
-const DetailModal = ({
-  source,
-  currentPage,
-  totalPages,
-  onNextPage,
-  onPrevPage,
-  onClose,
-}) => {
-  const start = (currentPage - 1) * 5;
-  const displayedItems = source.items.slice(start, start + 5);
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
-          onClick={onClose}
-        >
-          <i className="fas fa-times"></i>
-        </button>
-        <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 flex items-center">
-          <i className={`${source.icon} mr-3 text-4xl`}></i>
-          {source.source} 详情
-        </h2>
-
-        <div id="modal-list-container" className="space-y-4 mb-6">
-          {displayedItems.map((item, i) => (
-            <div
-              key={i}
-              className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm flex flex-col"
-            >
-              <div className="flex items-center mb-2">
-                <span className="font-bold text-xl mr-3 w-8 text-center text-red-500">
-                  {start + i + 1}
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 text-lg font-semibold flex-grow">
-                  {item.title}
-                </span>
-                <span className="ml-4 text-base text-gray-600 dark:text-gray-300 flex-shrink-0">
-                  <i className="fas fa-fire text-orange-400 mr-1"></i>
-                  {item.hot}
-                </span>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm ml-11">
-                {item.summary}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div
-          id="pagination-controls"
-          className="flex justify-center items-center space-x-4"
-        >
-          <button
-            onClick={onPrevPage}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
-          >
-            上一页
-          </button>
-          <span id="page-info" className="text-lg font-medium">
-            第 {currentPage} / {totalPages} 页
-          </span>
-          <button
-            onClick={onNextPage}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
-          >
-            下一页
-          </button>
-        </div>
-      </div>
-    </div>
+{
+  showDetailModal && currentDetailSource && (
+    <DetailModal
+      source={hotData.find((d) => d.source === currentDetailSource)}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onNextPage={goToNextPage}
+      onPrevPage={goToPrevPage}
+      onClose={() => setShowDetailModal(false)} // 这是关键
+    />
   );
-};
+}
 
 export default App;
