@@ -1,85 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import "./App.css";
-
-// 中文模拟数据 - 具体平台来源
-const mockSources = [
-  {
-    id: 1,
-    name: "微博热搜",
-    color: "from-orange-500 to-red-600",
-    icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6">
-        <path
-          fill="currentColor"
-          d="M22 4H2v16h20V4zM8.5 10.5c0 1.4-1.1 2.5-2.5 2.5S3.5 11.9 3.5 10.5 4.6 8 6 8s2.5 1.1 2.5 2.5zm11.5 0c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5 1.1-2.5 2.5-2.5 2.5 1.1 2.5 2.5z"
-        />
-      </svg>
-    ),
-    items: Array(15)
-      .fill()
-      .map((_, i) => ({
-        id: i + 1,
-        title: `微博热搜话题 ${i + 1}`,
-      })),
-  },
-  {
-    id: 2,
-    name: "知乎热榜",
-    color: "from-blue-500 to-cyan-400",
-    icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6">
-        <path
-          fill="currentColor"
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5 3v-7z"
-        />
-      </svg>
-    ),
-    items: Array(15)
-      .fill()
-      .map((_, i) => ({
-        id: i + 1,
-        title: `知乎热榜话题 ${i + 1}`,
-      })),
-  },
-  {
-    id: 3,
-    name: "抖音热榜",
-    color: "from-red-500 to-pink-500",
-    icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6">
-        <path
-          fill="currentColor"
-          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
-        />
-      </svg>
-    ),
-    items: Array(15)
-      .fill()
-      .map((_, i) => ({
-        id: i + 1,
-        title: `抖音热门视频 ${i + 1}`,
-      })),
-  },
-  {
-    id: 4,
-    name: "百度热搜",
-    color: "from-indigo-600 to-purple-500",
-    icon: (
-      <svg viewBox="0 0 24 24" className="w-6 h-6">
-        <path
-          fill="currentColor"
-          d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99 5-.37-.28h-.79l-.28-.27H14v-2h2.49L19 19l-2.51-2.5h-.79l-.28-.27V14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-        />
-      </svg>
-    ),
-    items: Array(15)
-      .fill()
-      .map((_, i) => ({
-        id: i + 1,
-        title: `百度热搜事件 ${i + 1}`,
-      })),
-  },
-];
+import { mockSources } from "./mockSources";
 
 function useDarkMode() {
   const prefersDarkMode = window.matchMedia(
@@ -99,17 +20,14 @@ function useDarkMode() {
 
 export default function App() {
   const [darkMode, setDarkMode] = useDarkMode(false);
-
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 
-       ${
-         darkMode
-           ? "dark-mode bg-gray-900 text-white"
-           : "bg-gray-50 text-gray-900"
-       }`}
+      className={`min-h-screen transition-colors duration-300 ${
+        darkMode
+          ? "dark-mode bg-gray-900 text-white"
+          : "bg-gray-50 text-gray-900"
+      }`}
     >
-      {/* 头部 */}
       <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div>
@@ -117,15 +35,13 @@ export default function App() {
               <svg viewBox="0 0 24 24" className="w-8 h-8 mr-2">
                 <path
                   fill="currentColor"
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
                 />
               </svg>
               今日热榜
             </h1>
             <p className="mt-2 text-indigo-100">查看来自各大平台的热门资讯</p>
           </div>
-
-          {/* 主题切换按钮 */}
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-2 rounded-full hover:bg-white/10 transition-colors"
@@ -135,7 +51,7 @@ export default function App() {
               <svg viewBox="0 0 24 24" className="w-6 h-6">
                 <path
                   fill="currentColor"
-                  d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3zm9-3h2c0 1.65-1.35 3-3 3v-2c.55 0 1-.45 1-1h1zm-1-4h2c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1h1zm-7 4h2c0 1.65-1.35 3-3 3v-2c.55 0 1-.45 1-1h1zm-7-4h2c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1h1zM12 5c1.65 0 3 1.35 3 3h-2c0-.55-.45-1-1-1s-1 .45-1 1H9c0-1.65 1.35-3 3-3zm0 14c-1.65 0-3-1.35-3-3h2c0 .55 .45 1 1 1s1-.45 1-1h2c0 1.65-1.35 3-3 3zm-7-4c0 1.65 1.35 3 3 3v-2c-.55 0-1-.45-1-1h-2zm10-8c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1h2z"
+                  d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3zm9-3h2c0 1.65-1.35 3-3 3v-2c.55 0 1-.45 1-1h1zm-1-4h2c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1h1zM9 12H7c0 1.65 1.35 3 3 3v-2c-.55 0-1-.45-1-1H9zm2-4H9c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1H11zm-2 8c0 1.65 1.35 3 3 3v-2c-.55 0-1-.45-1-1H9zm-4-4c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1H7zm7 4c0 1.65 1.35 3 3 3v-2c-.55 0-1-.45-1-1h2zm0-8c0-1.65-1.35-3-3-3v2c.55 0 1 .45 1 1H12z"
                 />
               </svg>
             ) : (
@@ -149,8 +65,6 @@ export default function App() {
           </button>
         </div>
       </header>
-
-      {/* 主体内容 */}
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -172,7 +86,6 @@ function SourceModule({ source, darkMode }) {
 
   const loadMore = () => {
     if (loading || visibleItems >= 10) return;
-
     setLoading(true);
     setTimeout(() => {
       setVisibleItems((prev) => Math.min(prev + 3, 10));
@@ -197,7 +110,6 @@ function SourceModule({ source, darkMode }) {
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current) return;
-
       const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
       if (scrollHeight - scrollTop - clientHeight < 10) {
         loadMore();
@@ -240,12 +152,14 @@ function SourceModule({ source, darkMode }) {
             <HotTopicItem key={item.id} item={item} darkMode={darkMode} />
           ))}
 
+          {/* 加载动画 */}
           {loading && (
             <div className="flex justify-center py-4">
               <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-300"></div>
             </div>
           )}
 
+          {/* 已加载全部 */}
           {visibleItems >= 10 && (
             <div className="text-center text-gray-500 py-2 text-sm">
               已加载全部内容
@@ -299,8 +213,9 @@ function HotTopicItem({ item, darkMode }) {
     <div
       className={`group p-3 rounded-lg hover:${
         darkMode ? "bg-gray-700" : "bg-gray-50"
-      } transition-colors duration-200 min-h-[72px]`}
+      } transition-colors duration-200 min-h-[72px] flex justify-between items-center`}
     >
+      {/* 标题 */}
       <h3
         className={`font-semibold line-clamp-2 group-hover:text-indigo-600 transition-colors duration-200 ${
           darkMode ? "text-gray-200" : "text-gray-800"
@@ -308,6 +223,15 @@ function HotTopicItem({ item, darkMode }) {
       >
         {item.title}
       </h3>
+
+      {/* 热度值 */}
+      <span
+        className={`text-xs font-medium px-2 py-1 rounded-full ${
+          darkMode ? "bg-gray-700/50" : "bg-gray-200"
+        }`}
+      >
+        热度: {item.heat.toLocaleString()}
+      </span>
     </div>
   );
 }
