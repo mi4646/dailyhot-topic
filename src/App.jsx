@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import Header from "./components/Header";
 import HotTopicCard from "./components/HotTopicCard";
 import HotTopicDetailModal from "./components/HotTopicDetailModal";
@@ -22,11 +22,20 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sourceSettings, setSourceSettings] = useState({});
 
-  // 初始化状态
-  useEffect(() => {
+  // 初始化主题
+  useLayoutEffect(() => {
     const savedTheme = localStorage.getItem("theme") === "dark";
     setDarkMode(savedTheme);
 
+    if (savedTheme) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, []);
+
+  // 初始化状态
+  useEffect(() => {
     const savedSettings = localStorage.getItem("hotTopicSettings");
     let settings = {};
     if (savedSettings) {
@@ -40,6 +49,8 @@ function App() {
     }
 
     setSourceSettings(settings);
+
+    // 初始化热榜数据
     setHotData(
       originalHotData.sort(
         (a, b) =>
@@ -47,6 +58,7 @@ function App() {
       )
     );
 
+    // 初始化详情页加载状态
     if (modalOpen && currentSource) {
       setModalLoading(true);
       const timer = setTimeout(() => {
@@ -55,6 +67,7 @@ function App() {
       return () => clearTimeout(timer);
     }
 
+    // 初始化骨架屏加载状态
     const timer = setTimeout(() => {
       setLoading(false);
     }, 800);
@@ -146,7 +159,7 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen bg-gray-100 dark:bg-gray-900 font-sans antialiased transition-colors duration-300 ${
+      className={`min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300 ${
         darkMode ? "dark" : ""
       }`}
     >
