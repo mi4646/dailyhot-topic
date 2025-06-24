@@ -35,7 +35,9 @@ src/
     ├── HotTopicCard.jsx        # 单个热榜卡片组件
     ├── HotTopicDetailModal.jsx # 详情页模态框
     ├── SettingsModal.jsx       # 设置模态框
-    └── Toast.jsx              # 提示信息组件
+    ├── Toast.jsx              # 提示信息组件
+	  ├── SkeletonLoader.jsx     # 首页骨架屏
+	  └── DetailSkeleton.jsx     # 详情页骨架屏
 ```
 
 ---
