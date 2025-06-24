@@ -92,7 +92,7 @@ function App() {
   const saveSettings = () => {
     setLoading(true); // 显示骨架屏
     showNotification("设置已保存！"); // 显示通知
-    
+
     // 模拟保存和数据处理延迟
     const orderedHotData = sourceSettings.order
       .map((sourceName) =>
@@ -158,21 +158,27 @@ function App() {
           openSettings={() => setSettingsModalOpen(true)}
         />
 
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {hotData
-            .filter((source) => sourceSettings[source.source]?.visible ?? true)
-            .map((sourceData, idx) => (
-              <HotTopicCard
-                key={idx}
-                sourceData={sourceData}
-                openModal={openModal}
-              />
-            ))}
-        </div> */}
-
         {/* 首页热榜 */}
         {loading ? (
-          <SkeletonLoader />
+          <SkeletonLoader count={hotData.length} />
+        ) : hotData.filter(
+            (source) => sourceSettings[source.source]?.visible ?? true
+          ).length === 0 ? (
+          <div className="text-center py-12">
+            <i className="fas fa-info-circle text-gray-500 dark:text-gray-400 text-5xl mb-4"></i>
+            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              暂无可见榜单
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
+              请前往设置页面开启至少一个平台榜单。
+            </p>
+            <button
+              onClick={() => setSettingsModalOpen(true)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+            >
+              打开设置
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {hotData

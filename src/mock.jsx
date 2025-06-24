@@ -3,6 +3,7 @@ const originalHotData = [
   {
     source: "微博热搜",
     icon: "fab fa-weibo text-red-500",
+    visible: true,
     items: [
       {
         title: "某明星新剧开播",
@@ -141,6 +142,7 @@ const originalHotData = [
   {
     source: "知乎热榜",
     icon: "fab fa-zhihu text-blue-600",
+    visible: true,
     items: [
       {
         title: "如何看待年轻人“反向消费”？",
@@ -207,6 +209,7 @@ const originalHotData = [
   {
     source: "百度热搜",
     icon: "fas fa-search text-blue-500",
+    visible: true,
     items: [
       {
         title: "春运火车票开售",
@@ -273,6 +276,7 @@ const originalHotData = [
   {
     source: "B站热门",
     icon: "fas fa-tv text-pink-500",
+    visible: true,
     items: [
       {
         title: "年度动画盘点",
