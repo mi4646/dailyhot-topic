@@ -53,11 +53,12 @@ function App() {
         setModalLoading(false);
       }, 800);
       return () => clearTimeout(timer);
-    } else {
-      setTimeout(() => {
-        setLoading(false);
-      }, 800);
     }
+
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
   }, [currentPage, modalOpen, currentSource]);
 
   // 切换主题
@@ -89,14 +90,24 @@ function App() {
 
   // 保存设置
   const saveSettings = () => {
+    setLoading(true); // 显示骨架屏
+    showNotification("设置已保存！"); // 显示通知
+    
+    // 模拟保存和数据处理延迟
     const orderedHotData = sourceSettings.order
       .map((sourceName) =>
         originalHotData.find((data) => data.source === sourceName)
       )
       .filter(Boolean);
+
     setHotData(orderedHotData);
+
     localStorage.setItem("hotTopicSettings", JSON.stringify(sourceSettings));
-    showNotification("设置已保存！");
+
+    setTimeout(() => {
+      setLoading(false); // 数据加载完成，隐藏骨架屏
+    }, 600);
+
     setSettingsModalOpen(false);
   };
 
