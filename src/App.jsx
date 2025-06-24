@@ -4,9 +4,12 @@ import HotTopicCard from "./components/HotTopicCard";
 import HotTopicDetailModal from "./components/HotTopicDetailModal";
 import SettingsModal from "./components/SettingsModal";
 import NotificationToast from "./components/NotificationToast";
+import SkeletonLoader from "./components/SkeletonLoader";
 import originalHotData from "./mock";
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [modalLoading, setModalLoading] = useState(false);
   const [hotData, setHotData] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   const [notification, setNotification] = useState({
@@ -38,19 +41,24 @@ function App() {
 
     setSourceSettings(settings);
     setHotData(
-      originalHotData.sort((a, b) => {
-        return (
+      originalHotData.sort(
+        (a, b) =>
           settings.order.indexOf(a.source) - settings.order.indexOf(b.source)
-        );
-      })
+      )
     );
-    // 设置初始主题到 html 标签
-    if (savedTheme) {
-      document.documentElement.classList.add("dark");
+
+    if (modalOpen && currentSource) {
+      setModalLoading(true);
+      const timer = setTimeout(() => {
+        setModalLoading(false);
+      }, 800);
+      return () => clearTimeout(timer);
     } else {
-      document.documentElement.classList.remove("dark");
+      setTimeout(() => {
+        setLoading(false);
+      }, 800);
     }
-  }, []);
+  }, [currentPage, modalOpen, currentSource]);
 
   // 切换主题
   const toggleTheme = () => {
@@ -105,15 +113,21 @@ function App() {
     showNotification("设置已恢复为默认值！");
   };
 
-  // 打开模态框
+  // 打开详情页
   const openModal = (sourceName) => {
+    setModalLoading(true); // 打开模态框时显示骨架屏
     const source = originalHotData.find((data) => data.source === sourceName);
     setCurrentSource(source);
     setCurrentPage(1);
     setModalOpen(true);
+
+    // 模拟数据加载延迟（可选）
+    setTimeout(() => {
+      setModalLoading(false);
+    }, 600); // 可根据实际情况调整时间
   };
 
-  // 关闭模态框
+  // 关闭详情页
   const closeModal = () => {
     setCurrentSource(null);
     setModalOpen(false);
@@ -133,8 +147,7 @@ function App() {
           openSettings={() => setSettingsModalOpen(true)}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* 热榜列表 */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {hotData
             .filter((source) => sourceSettings[source.source]?.visible ?? true)
             .map((sourceData, idx) => (
@@ -144,7 +157,26 @@ function App() {
                 openModal={openModal}
               />
             ))}
-        </div>
+        </div> */}
+
+        {/* 首页热榜 */}
+        {loading ? (
+          <SkeletonLoader />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {hotData
+              .filter(
+                (source) => sourceSettings[source.source]?.visible ?? true
+              )
+              .map((sourceData, idx) => (
+                <HotTopicCard
+                  key={idx}
+                  sourceData={sourceData}
+                  openModal={openModal}
+                />
+              ))}
+          </div>
+        )}
 
         {/* 模态框 */}
         <HotTopicDetailModal
@@ -153,6 +185,7 @@ function App() {
           setCurrentPage={setCurrentPage}
           modalOpen={modalOpen}
           closeModal={closeModal}
+          loading={modalLoading}
         />
 
         {/* 设置模态框 */}

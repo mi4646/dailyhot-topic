@@ -1,27 +1,33 @@
 // src/components/HotTopicDetailModal.jsx
 // 详情页模态框组件
 
+import DetailSkeleton from "./DetailSkeleton";
+
 const HotTopicDetailModal = ({
   currentSource,
   currentPage,
   setCurrentPage,
   modalOpen,
   closeModal,
+  loading,
 }) => {
   const ITEMS_PER_PAGE = 10;
 
-  if (!modalOpen || !currentSource) return null;
+  if (!modalOpen) return null;
 
-  const totalPages = Math.ceil(currentSource.items.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(currentSource?.items.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = Math.min(
     startIndex + ITEMS_PER_PAGE,
-    currentSource.items.length
+    currentSource?.items.length
   );
 
-  const renderItems = currentSource.items
-    .slice(startIndex, endIndex)
-    .map((item, idx) => (
+  const renderItems = () => {
+    if (loading) {
+      return <DetailSkeleton />;
+    }
+
+    return currentSource.items.slice(startIndex, endIndex).map((item, idx) => (
       <div
         key={idx}
         className="bg-white dark:bg-gray-700 p-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex flex-col"
@@ -50,6 +56,7 @@ const HotTopicDetailModal = ({
         </p>
       </div>
     ));
+  };
 
   return (
     <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -64,7 +71,10 @@ const HotTopicDetailModal = ({
           <i className={`${currentSource.icon} mr-4 text-5xl`}></i>
           {currentSource.source} 详情
         </h2>
-        <div className="space-y-4 mb-6">{renderItems}</div>
+
+        {/* 显示骨架屏或真实内容 */}
+        {renderItems()}
+
         <div className="flex justify-center items-center space-x-6 mt-8">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
