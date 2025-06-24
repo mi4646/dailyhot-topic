@@ -1,5 +1,7 @@
 import React from "react";
 
+const ITEMS_PER_PAGE = 5;
+
 const DetailModal = ({
   source,
   currentPage,
@@ -8,7 +10,6 @@ const DetailModal = ({
   onPrevPage,
   onClose,
 }) => {
-  const ITEMS_PER_PAGE = 5;
   const start = (currentPage - 1) * ITEMS_PER_PAGE;
   const displayedItems = source.items.slice(start, start + ITEMS_PER_PAGE);
 
@@ -17,12 +18,12 @@ const DetailModal = ({
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto relative animate-fade-in">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-2xl"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
         >
           <i className="fas fa-times"></i>
         </button>
-        <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100 flex items-center">
-          <i className={`${source.icon} mr-3 text-4xl`}></i>
+        <h2 className="text-4xl font-extrabold mb-8 text-gray-900 dark:text-gray-100 flex items-center justify-center">
+          <i className={`${source.icon} mr-4 text-5xl`}></i>
           {source.source} 详情
         </h2>
         <div id="modal-list-container" className="space-y-4 mb-6">
@@ -44,15 +45,12 @@ const DetailModal = ({
                 </span>
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-sm ml-11">
-                {item.summary || "暂无摘要信息"}
+                {item.summary}
               </p>
             </div>
           ))}
         </div>
-        <div
-          id="pagination-controls"
-          className="flex justify-center items-center space-x-4"
-        >
+        <div className="flex justify-center items-center space-x-4 mt-4">
           <button
             disabled={currentPage === 1}
             onClick={onPrevPage}
@@ -60,7 +58,7 @@ const DetailModal = ({
           >
             上一页
           </button>
-          <span id="page-info" className="text-lg font-medium">
+          <span className="text-lg font-medium">
             第 {currentPage} / {totalPages} 页
           </span>
           <button

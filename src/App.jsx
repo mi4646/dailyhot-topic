@@ -286,24 +286,9 @@ const App = () => {
   ]);
 
   const [sortedSources, setSortedSources] = useState([...hotData]);
-
-  const currentSourceData = hotData.find(
-    (d) => d.source === currentDetailSource
+  const [visibleSources, setVisibleSources] = useState(
+    hotData.map((d) => d.source)
   );
-  const items = currentSourceData?.items || [];
-  const totalPages = Math.ceil(items.length / 5) || 1;
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const goToPrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
-  };
 
   useEffect(() => {
     if (theme === "dark") {
@@ -313,90 +298,100 @@ const App = () => {
     }
   }, [theme]);
 
-  // 切换主题
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
   };
 
-  // 打开设置模态框
-  const openSettingsModal = () => {
-    setShowSettingsModal(true);
-  };
-
-  // 关闭设置模态框
-  const closeSettingsModal = () => {
-    setShowSettingsModal(false);
-  };
-
-  // 打开详情模态框
   const openDetailModal = (sourceName) => {
     setCurrentDetailSource(sourceName);
     setCurrentPage(1);
     setShowDetailModal(true);
   };
 
-  // 关闭详情模态框
   const closeDetailModal = () => {
     setShowDetailModal(false);
   };
 
-  // 切换可见性
+  const openSettingsModal = () => {
+    setShowSettingsModal(true);
+  };
+
+  const closeSettingsModal = () => {
+    setShowSettingsModal(false);
+  };
+
   const toggleVisibility = (sourceName) => {
-    setHotData(
-      hotData.map((d) =>
-        d.source === sourceName ? { ...d, visible: !d.visible } : d
+    setHotData((prev) =>
+      prev.map((item) =>
+        item.source === sourceName ? { ...item, visible: !item.visible } : item
       )
     );
   };
 
-  return (
-    <div className="bg-gray-100 dark:bg-gray-900 font-sans antialiased transition-colors duration-300 min-h-screen">
-      <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center relative dark:text-gray-100">
-          <i className="fas fa-fire-alt text-red-500 mr-3"></i>
-          今日热榜
-          {/* 主题切换按钮 */}
-          <button
-            id="theme-toggle"
-            onClick={toggleTheme}
-            className="absolute right-16 top-1/2 -translate-y-1/2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-md hover:scale-105 transition-transform duration-200"
-          >
-            {theme === "light" ? (
-              <i className="fas fa-moon text-xl"></i>
-            ) : (
-              <i className="fas fa-sun text-xl"></i>
-            )}
-          </button>
-          {/* 设置按钮 */}
-          <button
-            id="settings-button"
-            onClick={openSettingsModal}
-            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-md hover:scale-105 transition-transform duration-200"
-          >
-            <i className="fas fa-cog text-xl"></i>
-          </button>
-        </h1>
+  const reorder = (list, startIndex, endIndex) => {
+    const result = [...list];
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
 
-        {/* 热榜模块容器 */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          id="hot-topics-container"
+  const handleSortEnd = (newOrder) => {
+    const reordered = newOrder.map((index) => hotData[index]);
+    setSortedSources(reordered);
+  };
+
+  // 当前榜单源数据和分页计算
+  const currentSourceData = hotData.find(
+    (d) => d.source === currentDetailSource
+  );
+  const ITEMS_PER_PAGE = 5;
+  const totalPages =
+    Math.ceil(currentSourceData?.items?.length / ITEMS_PER_PAGE) || 1;
+
+  return (
+    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+      <h1 className="text-4xl font-extrabold text-gray-900 mb-8 text-center relative dark:text-gray-100">
+        <i className="fas fa-fire-alt text-red-500 mr-3"></i>
+        今日热榜
+        {/* 主题切换按钮 */}
+        <button
+          onClick={toggleTheme}
+          className="absolute right-16 top-1/2 -translate-y-1/2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-md hover:scale-105 transition-transform duration-200"
         >
-          {hotData
-            .filter((d) => d.visible)
-            .map((sourceData, index) => (
-              <HotTopicModule
-                key={index}
-                data={sourceData}
-                onMoreClick={() => openDetailModal(sourceData.source)}
-              />
-            ))}
-        </div>
+          {theme === "light" ? (
+            <i className="fas fa-moon text-xl"></i>
+          ) : (
+            <i className="fas fa-sun text-xl"></i>
+          )}
+        </button>
+        {/* 设置按钮 */}
+        <button
+          onClick={openSettingsModal}
+          className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-md hover:scale-105 transition-transform duration-200"
+        >
+          <i className="fas fa-cog text-xl"></i>
+        </button>
+      </h1>
+
+      {/* 热榜模块容器 */}
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        id="hot-topics-container"
+      >
+        {hotData
+          .filter((data) => data.visible)
+          .map((sourceData, index) => (
+            <HotTopicModule
+              key={index}
+              data={sourceData}
+              onMoreClick={() => openDetailModal(sourceData.source)}
+            />
+          ))}
       </div>
 
-      {/* 设置模态框 */}
+      {/* 模态框组件 */}
       {showSettingsModal && (
         <SettingsModal
           sources={hotData}
@@ -407,14 +402,13 @@ const App = () => {
         />
       )}
 
-      {/* 详情模态框 */}
       {showDetailModal && currentDetailSource && (
         <DetailModal
           source={currentSourceData}
           currentPage={currentPage}
           totalPages={totalPages}
-          onNextPage={goToNextPage}
-          onPrevPage={goToPrevPage}
+          onNextPage={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          onPrevPage={() => setCurrentPage((p) => Math.max(p - 1, 1))}
           onClose={closeDetailModal}
         />
       )}

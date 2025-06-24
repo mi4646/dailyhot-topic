@@ -7,13 +7,6 @@ const SettingsModal = ({
   setSortedSources,
   toggleVisibility,
 }) => {
-  const reorder = (list, startIndex, endIndex) => {
-    const result = [...list];
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  };
-
   const [draggingIndex, setDraggingIndex] = useState(null);
 
   const onDragStart = (e, index) => {
@@ -28,13 +21,16 @@ const SettingsModal = ({
   const onDrop = (e, dropIndex) => {
     const draggedIndex = parseInt(e.dataTransfer.getData("draggedIndex"));
     if (draggedIndex === dropIndex) return;
-    const reordered = reorder(sortedSources, draggedIndex, dropIndex);
+    const reordered = [...sortedSources];
+    const [movedItem] = reordered.splice(draggingIndex, 1);
+    reordered.splice(dropIndex, 0, movedItem);
     setSortedSources(reordered);
+    setDraggingIndex(null);
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto relative">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto relative animate-fade-in">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"

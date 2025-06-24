@@ -1,15 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="src/assets/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>今日热榜</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome 图标库 -->
     <link
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
       defer
     />
+
+    <!-- 预加载字体资源 -->
     <link
       rel="preload"
       href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2"
@@ -25,7 +32,9 @@
       crossorigin
     />
   </head>
-  <body>
+  <body
+    class="bg-gray-100 dark:bg-gray-900 font-sans antialiased transition-colors duration-300 min-h-screen"
+  >
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
@@ -41,58 +50,30 @@
         transform: translateY(0);
       }
     }
-
     .animate-fade-in {
       animation: fade-in 0.5s ease-out forwards;
     }
-
     .hot-list-scroll::-webkit-scrollbar {
-      width: 8px;
-      background-color: transparent;
+      width: 10px; /* 增加滚动条宽度 */
+      background-color: transparent; /* 默认透明 */
     }
-
     .hot-list-scroll::-webkit-scrollbar-track {
-      background: transparent;
+      background: transparent; /* 默认透明 */
       border-radius: 10px;
     }
-
     .hot-list-scroll::-webkit-scrollbar-thumb {
-      background: transparent;
+      background: transparent; /* 默认透明 */
       border-radius: 10px;
     }
-
     .hot-list-scroll:hover::-webkit-scrollbar-thumb {
-      background: #a0a0a0;
+      background: #a0a0a0; /* 悬停时显示滑块 */
     }
-
+    .hot-list-scroll:hover::-webkit-scrollbar-track {
+      background: #e0e0e0; /* 悬停时显示轨道 */
+    }
     .hot-list-scroll::-webkit-scrollbar-thumb:hover {
-      background: #707070;
+      background: #707070; /* 调整滑块悬停背景色 */
     }
-
-    /* 暗黑模式滚动条优化 */
-    .dark .hot-list-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .dark .hot-list-scroll::-webkit-scrollbar-thumb {
-      background: transparent;
-      border-radius: 10px;
-    }
-
-    .dark .hot-list-scroll:hover::-webkit-scrollbar-thumb {
-      background: #374151; /* gray-700 */
-    }
-
-    .dark .hot-list-scroll::-webkit-scrollbar-thumb:hover {
-      background: #4b5563; /* gray-600 */
-    }
-
-    /* 滚动条过渡动画（可选） */
-    .hot-list-scroll::-webkit-scrollbar-thumb,
-    .hot-list-scroll::-webkit-scrollbar-track {
-      transition: background-color 0.3s ease;
-    }
-
     /* 模态框背景 */
     .modal-overlay {
       position: fixed;
@@ -106,20 +87,18 @@
       align-items: center;
       z-index: 1000;
     }
-
     /* 模态框内容 */
     .modal-content {
       background-color: white;
-      padding: 2rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 2.5rem; /* 增加内边距 */
+      border-radius: 0.75rem; /* 增加圆角 */
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* 增强阴影 */
       width: 90%;
       max-width: 800px;
       max-height: 90%;
       overflow-y: auto;
       position: relative;
     }
-
     /* 设置模态框内容 */
     .settings-modal-content {
       background-color: white;
@@ -127,12 +106,11 @@
       border-radius: 0.5rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       width: 90%;
-      max-width: 600px;
+      max-width: 600px; /* 调整最大宽度 */
       max-height: 90%;
       overflow-y: auto;
       position: relative;
     }
-
     /* 拖拽排序项样式 */
     .draggable-item {
       display: flex;
@@ -146,65 +124,19 @@
       cursor: grab;
       transition: background-color 0.2s ease-in-out;
     }
-
     .draggable-item:hover {
       background-color: #f3f4f6;
     }
-
     .draggable-item.dragging {
       opacity: 0.7;
       border: 2px dashed #3b82f6;
     }
-
     .dark .draggable-item {
       background-color: #374151;
       border-color: #4b5563;
     }
-
     .dark .draggable-item:hover {
       background-color: #4b5563;
     }
-
-    <style>
-  @keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.5s ease-out forwards;
-  }
-
-  .hot-list-scroll::-webkit-scrollbar {
-    width: 10px;
-    background: transparent;
-  }
-
-  .hot-list-scroll::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .hot-list-scroll::-webkit-scrollbar-thumb {
-    background: transparent;
-    border-radius: 10px;
-  }
-
-  .hot-list-scroll:hover::-webkit-scrollbar-thumb {
-    background: #a0a0a0;
-  }
-
-  .dark .hot-list-scroll::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .dark .hot-list-scroll::-webkit-scrollbar-thumb {
-    background: #374151;
-    border-radius: 10px;
-  }
-
-  .dark .hot-list-scroll::-webkit-scrollbar-thumb:hover {
-    background: #4b5563;
-  }
-</style>
   </style>
 </html>
