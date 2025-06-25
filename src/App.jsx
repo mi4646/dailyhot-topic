@@ -157,6 +157,17 @@ function App() {
     setModalOpen(false);
   };
 
+  // 处理热源可见性变更
+  const handleSourceVisibilityChange = (sourceName, isVisible) => {
+    setSourceSettings((prev) => ({
+      ...prev,
+      [sourceName]: {
+        ...prev[sourceName],
+        visible: isVisible,
+      },
+    }));
+  };
+
   return (
     <div
       className={`min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300 ${
@@ -226,6 +237,7 @@ function App() {
           updateOrder={updateOrder}
           saveSettings={saveSettings}
           resetSettings={resetSettings}
+          onSourceVisibilityChange={handleSourceVisibilityChange}
         />
 
         {/* 通知 Toast */}

@@ -9,7 +9,10 @@ const SettingsModal = ({
   updateOrder,
   saveSettings,
   resetSettings,
+  onSourceVisibilityChange,
 }) => {
+  // 去除order属性，只保留热点源的设置
+  const { order, ...rest } = sourceSettings;
   const sortableListRef = React.useRef(null);
 
   const addDragAndDropListeners = () => {
@@ -70,8 +73,10 @@ const SettingsModal = ({
     }
   }, [settingsModalOpen]);
 
+  // 处理热点源可见性变更,调用父组件的回调
   const handleVisibilityChange = (sourceName) => (e) => {
-    // 调用父级传入的 updateOrder 函数处理
+    const isVisible = e.target.checked;
+    onSourceVisibilityChange(sourceName, isVisible);
   };
 
   return (
@@ -84,6 +89,7 @@ const SettingsModal = ({
           >
             <i className="fas fa-times"></i>
           </button>
+
           <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-200 flex items-center">
             <i className="fas fa-cog mr-3 text-4xl"></i>
             设置
@@ -94,7 +100,7 @@ const SettingsModal = ({
               榜单排序
             </h3>
             <div ref={sortableListRef} className="space-y-2">
-              {Object.keys(sourceSettings).map((sourceName) => (
+              {Object.keys(rest).map((sourceName) => (
                 <div
                   key={sourceName}
                   className="draggable-item draggable-item"
@@ -113,7 +119,7 @@ const SettingsModal = ({
               榜单显示
             </h3>
             <div className="space-y-2">
-              {Object.keys(sourceSettings).map((sourceName) => (
+              {Object.keys(rest).map((sourceName) => (
                 <div
                   key={sourceName}
                   className="flex items-center justify-between py-2"
@@ -125,7 +131,7 @@ const SettingsModal = ({
                     <input
                       type="checkbox"
                       className="sr-only peer"
-                      checked={sourceSettings[sourceName]?.visible ?? true}
+                      checked={rest[sourceName]?.visible ?? true}
                       onChange={handleVisibilityChange(sourceName)}
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
