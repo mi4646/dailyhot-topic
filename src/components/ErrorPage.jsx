@@ -1,55 +1,55 @@
 // src/components/ErrorPage.jsx
 
 // 错误页面
-export const ErrorPage = ({ message, onRetry, darkMode }) => {
-  return (
-    <div
-      className={`flex flex-col items-center justify-center min-h-screen p-6 transition-colors duration-300 ${
-        darkMode ? "bg-gray-900 text-gray-200" : "bg-gray-100 text-gray-800"
-      }`}
-    >
-      {/* 错误图标 */}
-      <div
-        className={`rounded-full p-4 mb-4 flex items-center justify-center ${
-          darkMode ? "bg-red-700" : "bg-red-500"
-        }`}
-      >
-        <i className="fas fa-exclamation-circle text-white text-3xl"></i>
-      </div>
+// export const ErrorPage = ({ message, onRetry, darkMode }) => {
+//   return (
+//     <div
+//       className={`flex flex-col items-center justify-center min-h-screen p-6 transition-colors duration-300 ${
+//         darkMode ? "bg-gray-900 text-gray-200" : "bg-gray-100 text-gray-800"
+//       }`}
+//     >
+//       {/* 错误图标 */}
+//       <div
+//         className={`rounded-full p-4 mb-4 flex items-center justify-center ${
+//           darkMode ? "bg-red-700" : "bg-red-500"
+//         }`}
+//       >
+//         <i className="fas fa-exclamation-circle text-white text-3xl"></i>
+//       </div>
 
-      {/* 错误标题 */}
-      <h1
-        className={`text-2xl font-bold text-center mb-4 ${
-          darkMode ? "text-red-400" : "text-red-600"
-        }`}
-      >
-        数据加载失败
-      </h1>
+//       {/* 错误标题 */}
+//       <h1
+//         className={`text-2xl font-bold text-center mb-4 ${
+//           darkMode ? "text-red-400" : "text-red-600"
+//         }`}
+//       >
+//         数据加载失败
+//       </h1>
 
-      {/* 错误信息 */}
-      <p
-        className={`text-sm text-center max-w-md mb-6 ${
-          darkMode ? "text-gray-300" : "text-gray-600"
-        }`}
-      >
-        {message}
-      </p>
+//       {/* 错误信息 */}
+//       <p
+//         className={`text-sm text-center max-w-md mb-6 ${
+//           darkMode ? "text-gray-300" : "text-gray-600"
+//         }`}
+//       >
+//         {message}
+//       </p>
 
-      {/* 刷新按钮 */}
-      <button
-        onClick={onRetry}
-        className={`px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center space-x-2 ${
-          darkMode
-            ? "bg-blue-600 hover:bg-blue-700"
-            : "bg-blue-500 hover:bg-blue-600"
-        } text-white`}
-      >
-        <i className="fas fa-sync-alt mr-2"></i>
-        <span>刷新页面</span>
-      </button>
-    </div>
-  );
-};
+//       {/* 刷新按钮 */}
+//       <button
+//         onClick={onRetry}
+//         className={`px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center space-x-2 ${
+//           darkMode
+//             ? "bg-blue-600 hover:bg-blue-700"
+//             : "bg-blue-500 hover:bg-blue-600"
+//         } text-white`}
+//       >
+//         <i className="fas fa-sync-alt mr-2"></i>
+//         <span>刷新页面</span>
+//       </button>
+//     </div>
+//   );
+// };
 
 // 错误卡片
 export const ErrorCard = ({ message, onRetry }) => {
@@ -63,6 +63,52 @@ export const ErrorCard = ({ message, onRetry }) => {
       >
         <i className="fas fa-sync-alt text-xs"></i>
         <span>重试</span>
+      </button>
+    </div>
+  );
+};
+
+export const ErrorPage = ({ message, onRetry, darkMode }) => {
+  return (
+    <div
+      className={`flex flex-col items-center justify-center pt-8 pb-12 px-4 min-h-screen transition-colors duration-300 ${
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-800"
+      }`}
+    >
+      {/* 错误图标 */}
+      <div
+        className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-5 ${
+          darkMode ? "bg-red-700" : "bg-red-500"
+        }`}
+      >
+        <i className="fas fa-exclamation-circle text-white text-3xl"></i>
+      </div>
+
+      {/* 错误标题 */}
+      <h1
+        className={`text-2xl font-bold mb-4 ${
+          darkMode ? "text-red-400" : "text-red-600"
+        }`}
+      >
+        数据加载失败
+      </h1>
+
+      {/* 错误信息 */}
+      <p
+        className={`text-sm max-w-md mb-6 text-center ${
+          darkMode ? "text-gray-300" : "text-gray-600"
+        }`}
+      >
+        {message}
+      </p>
+
+      {/* 刷新按钮 */}
+      <button
+        onClick={onRetry}
+        className={`px-6 py-2 rounded-md text-white text-sm font-medium inline-flex items-center space-x-2 hover:opacity-90 transition-opacity`}
+      >
+        <i className="fas fa-sync-alt"></i>
+        <span>刷新页面</span>
       </button>
     </div>
   );
