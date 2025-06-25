@@ -104,7 +104,6 @@ function App() {
   // 保存设置
   const saveSettings = () => {
     setLoading(true); // 显示骨架屏
-    showNotification("设置已保存！"); // 显示通知
 
     // 模拟保存和数据处理延迟
     const orderedHotData = sourceSettings.order
@@ -121,6 +120,7 @@ function App() {
       setLoading(false); // 数据加载完成，隐藏骨架屏
     }, 600);
 
+    showNotification("设置已保存！"); // 显示通知
     setSettingsModalOpen(false);
   };
 
