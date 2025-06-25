@@ -5,9 +5,12 @@ import HotTopicDetailModal from "./components/HotTopicDetailModal";
 import SettingsModal from "./components/SettingsModal";
 import NotificationToast from "./components/NotificationToast";
 import SkeletonLoader from "./components/SkeletonLoader";
+import { ErrorPage } from "./components/ErrorPage";
 import originalHotData from "./mock";
 
 function App() {
+  const [error, setError] = useState(null);
+  const [hotDataErrors, setHotDataErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [modalLoading, setModalLoading] = useState(false);
   const [hotData, setHotData] = useState([]);
@@ -68,10 +71,20 @@ function App() {
     }
 
     // 初始化骨架屏加载状态
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setLoading(false);
     }, 800);
-    return () => clearTimeout(timer);
+
+    // 模拟某个平台加载失败
+    setTimeout(() => {
+      setHotDataErrors((prev) => ({
+        ...prev,
+        微博热搜: "无法获取 微博热搜 数据，请稍后再试。",
+      }));
+    }, 1000);
+
+    // 模拟数据加载失败
+    handleLoadError("获取数据失败");
   }, [currentPage, modalOpen, currentSource]);
 
   // 切换主题
@@ -168,6 +181,61 @@ function App() {
     }));
   };
 
+  // 模拟数据加载失败
+  const handleLoadError = (message) => {
+    setError(message);
+  };
+
+  // 刷新页面
+  const handleRetry = (sourceName) => {
+    // 清除当前 source 的错误状态
+    setHotDataErrors((prev) => ({
+      ...prev,
+      [sourceName]: null, // 清除该平台错误信息
+    }));
+
+    // 模拟重新加载数据
+    // 这里可以替换为真实的 API 请求
+    // fetchDataForSource(sourceName)
+    //   .then((data) => {
+    //     setHotData((prev) =>
+    //       prev.map((item) =>
+    //         item.source === sourceName ? { ...item, items: data } : item
+    //       )
+    //     );
+    //   })
+    //   .catch(() => {
+    //     // 加载失败时再次设置错误信息
+    //     setHotDataErrors((prev) => ({
+    //       ...prev,
+    //       [sourceName]: "刷新失败，请稍后再试。",
+    //     }));
+    //   });
+    // const fetchDataForSource = (sourceName) => {
+    //   return new Promise((resolve, reject) => {
+    //     setTimeout(() => {
+    //       if (Math.random() > 0.5) {
+    //         resolve([
+    //           { title: `${sourceName} 新条目1`, hot: "10万+", url: "#" },
+    //           { title: `${sourceName} 新条目2`, hot: "9万+", url: "#" },
+    //         ]);
+    //       } else {
+    //         reject("网络异常");
+    //       }
+    //     }, 800);
+    //   });
+    // };
+  };
+
+  // 错误页面刷新按钮点击事件
+  const ErrorPageRetryClick = () => {
+    setLoading(true); // 显示骨架屏
+    setError(null); // 重置错误状态
+    setTimeout(() => {
+      setLoading(false); // 数据加载完成，隐藏骨架屏
+    }, 600);
+  };
+
   return (
     <div
       className={`min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300 ${
@@ -182,8 +250,15 @@ function App() {
           openSettings={() => setSettingsModalOpen(true)}
         />
 
-        {/* 首页热榜 */}
-        {loading ? (
+        {/* 错误页面 */}
+        {error ? (
+          <ErrorPage
+            message={error}
+            darkMode={darkMode}
+            onRetry={ErrorPageRetryClick}
+          />
+        ) : loading ? (
+          // 骨架屏加载
           <SkeletonLoader count={hotData.length} />
         ) : hotData.filter(
             (source) => sourceSettings[source.source]?.visible ?? true
@@ -214,6 +289,8 @@ function App() {
                   key={idx}
                   sourceData={sourceData}
                   openModal={openModal}
+                  error={hotDataErrors[sourceData.source]} // 传入错误信息
+                  handleRetry={handleRetry}
                 />
               ))}
           </div>
