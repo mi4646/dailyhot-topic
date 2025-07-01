@@ -2,6 +2,7 @@
 // 详情页模态框组件
 
 import DetailSkeleton from "./DetailSkeleton";
+import { formatHot } from "../utils";
 
 const HotTopicDetailModal = ({
   currentSource,
@@ -48,7 +49,7 @@ const HotTopicDetailModal = ({
           </a>
           <span className="ml-4 text-lg text-gray-600 dark:text-gray-300 flex-shrink-0">
             <i className="fas fa-fire text-orange-500 mr-1"></i>
-            {item.hot}
+            {formatHot(item.hot)}
           </span>
         </div>
         <p className="text-gray-600 dark:text-gray-400 text-base ml-12 mt-2">
