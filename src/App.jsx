@@ -4,16 +4,19 @@ import HotTopicCard from "./components/HotTopicCard";
 import HotTopicDetailModal from "./components/HotTopicDetailModal";
 import SettingsModal from "./components/SettingsModal";
 import NotificationToast from "./components/NotificationToast";
-import SkeletonLoader from "./components/SkeletonLoader";
-import { ErrorPage } from "./components/ErrorPage";
-import originalHotData from "./mock";
+import axios from "axios";
 
 function App() {
-  const [error, setError] = useState(null);
+  // 状态管理
+  const [hotData, setHotData] = useState([
+    { source: "微博热搜", icon: "fab fa-weibo text-red-500", items: [] },
+    { source: "知乎热榜", icon: "fab fa-zhihu text-blue-600", items: [] },
+    { source: "百度热搜", icon: "fas fa-search text-orange-500", items: [] },
+    { source: "哔哩哔哩", icon: "fas fa-tv text-pink-500", items: [] },
+  ]);
+  const [loadingSources, setLoadingSources] = useState({});
   const [hotDataErrors, setHotDataErrors] = useState({});
-  const [loading, setLoading] = useState(true);
   const [modalLoading, setModalLoading] = useState(false);
-  const [hotData, setHotData] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   const [notification, setNotification] = useState({
     message: "",
@@ -25,7 +28,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sourceSettings, setSourceSettings] = useState({});
 
-  // 初始化主题
+  // 初始化加载状态
   useLayoutEffect(() => {
     const savedTheme = localStorage.getItem("theme") === "dark";
     setDarkMode(savedTheme);
@@ -35,57 +38,28 @@ function App() {
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, []);
 
-  // 初始化状态
-  useEffect(() => {
     const savedSettings = localStorage.getItem("hotTopicSettings");
     let settings = {};
     if (savedSettings) {
       settings = JSON.parse(savedSettings);
     } else {
-      originalHotData.forEach((source) => {
+      hotData.forEach((source) => {
         settings[source.source] = { visible: true };
       });
-      settings.order = originalHotData.map((s) => s.source);
+      settings.order = hotData.map((s) => s.source);
       localStorage.setItem("hotTopicSettings", JSON.stringify(settings));
     }
 
     setSourceSettings(settings);
-
-    // 初始化热榜数据
-    setHotData(
-      originalHotData.sort(
-        (a, b) =>
-          settings.order.indexOf(a.source) - settings.order.indexOf(b.source)
+    setHotData((prev) =>
+      prev.map((item) =>
+        settings.order.includes(item.source)
+          ? { ...item, visible: settings[item.source]?.visible ?? true }
+          : item
       )
     );
-
-    // 初始化详情页加载状态
-    if (modalOpen && currentSource) {
-      setModalLoading(true);
-      const timer = setTimeout(() => {
-        setModalLoading(false);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-
-    // 初始化骨架屏加载状态
-    setTimeout(() => {
-      setLoading(false);
-    }, 800);
-
-    // 模拟某个平台加载失败
-    setTimeout(() => {
-      setHotDataErrors((prev) => ({
-        ...prev,
-        微博热搜: "无法获取 微博热搜 数据，请稍后再试。",
-      }));
-    }, 1000);
-
-    // 模拟数据加载失败
-    handleLoadError("获取数据失败");
-  }, [currentPage, modalOpen, currentSource]);
+  }, []);
 
   // 切换主题
   const toggleTheme = () => {
@@ -116,24 +90,13 @@ function App() {
 
   // 保存设置
   const saveSettings = () => {
-    setLoading(true); // 显示骨架屏
-
-    // 模拟保存和数据处理延迟
     const orderedHotData = sourceSettings.order
-      .map((sourceName) =>
-        originalHotData.find((data) => data.source === sourceName)
-      )
+      .map((sourceName) => hotData.find((data) => data.source === sourceName))
       .filter(Boolean);
 
     setHotData(orderedHotData);
-
     localStorage.setItem("hotTopicSettings", JSON.stringify(sourceSettings));
-
-    setTimeout(() => {
-      setLoading(false); // 数据加载完成，隐藏骨架屏
-    }, 600);
-
-    showNotification("设置已保存！"); // 显示通知
+    showNotification("设置已保存！");
     setSettingsModalOpen(false);
   };
 
@@ -141,27 +104,26 @@ function App() {
   const resetSettings = () => {
     localStorage.removeItem("hotTopicSettings");
     const defaultSettings = {};
-    originalHotData.forEach((source) => {
+    hotData.forEach((source) => {
       defaultSettings[source.source] = { visible: true };
     });
-    defaultSettings.order = originalHotData.map((s) => s.source);
+    defaultSettings.order = hotData.map((s) => s.source);
     setSourceSettings(defaultSettings);
-    setHotData(originalHotData);
+    setHotData(hotData);
     showNotification("设置已恢复为默认值！");
   };
 
   // 打开详情页
   const openModal = (sourceName) => {
-    setModalLoading(true); // 打开模态框时显示骨架屏
-    const source = originalHotData.find((data) => data.source === sourceName);
+    setModalLoading(true);
+    const source = hotData.find((data) => data.source === sourceName);
     setCurrentSource(source);
     setCurrentPage(1);
     setModalOpen(true);
 
-    // 模拟数据加载延迟（可选）
     setTimeout(() => {
       setModalLoading(false);
-    }, 600); // 可根据实际情况调整时间
+    }, 600);
   };
 
   // 关闭详情页
@@ -181,60 +143,117 @@ function App() {
     }));
   };
 
-  // 模拟数据加载失败
-  const handleLoadError = (message) => {
-    setError(message);
+  // 请求真实榜单数据
+  const fetchDataForSource = async (sourceName) => {
+    let url;
+    switch (sourceName) {
+      case "微博热搜":
+        url = "/api-hot/weibo?cache=true";
+        break;
+      case "知乎热榜":
+        url = "/api-hot/zhihu?cache=true";
+        break;
+      case "百度热搜":
+        url = "/api-hot/baidu?cache=true";
+        break;
+      case "哔哩哔哩":
+        url = "/api-hot/bilibili?cache=true";
+        break;
+      default:
+        return [];
+    }
+
+    try {
+      const response = await axios.get(url);
+      return response.data.data || []; // 根据接口结构调整
+    } catch (err) {
+      console.error(`获取 ${sourceName} 数据失败`, err);
+      throw new Error(`无法获取 ${sourceName} 数据`);
+    }
   };
 
-  // 刷新页面
-  const handleRetry = (sourceName) => {
-    // 清除当前 source 的错误状态
-    setHotDataErrors((prev) => ({
-      ...prev,
-      [sourceName]: null, // 清除该平台错误信息
-    }));
+  // 加载所有榜单数据
+  const loadAllHotData = () => {
+    const savedSettings = localStorage.getItem("hotTopicSettings");
+    let settings = {};
 
-    // 模拟重新加载数据
-    // 这里可以替换为真实的 API 请求
-    // fetchDataForSource(sourceName)
-    //   .then((data) => {
-    //     setHotData((prev) =>
-    //       prev.map((item) =>
-    //         item.source === sourceName ? { ...item, items: data } : item
-    //       )
-    //     );
-    //   })
-    //   .catch(() => {
-    //     // 加载失败时再次设置错误信息
-    //     setHotDataErrors((prev) => ({
-    //       ...prev,
-    //       [sourceName]: "刷新失败，请稍后再试。",
-    //     }));
-    //   });
-    // const fetchDataForSource = (sourceName) => {
-    //   return new Promise((resolve, reject) => {
-    //     setTimeout(() => {
-    //       if (Math.random() > 0.5) {
-    //         resolve([
-    //           { title: `${sourceName} 新条目1`, hot: "10万+", url: "#" },
-    //           { title: `${sourceName} 新条目2`, hot: "9万+", url: "#" },
-    //         ]);
-    //       } else {
-    //         reject("网络异常");
-    //       }
-    //     }, 800);
-    //   });
-    // };
+    if (savedSettings) {
+      try {
+        settings = JSON.parse(savedSettings);
+      } catch (e) {
+        console.error("localStorage 解析失败", e);
+        settings = {};
+      }
+    } else {
+      originalHotData.forEach((source) => {
+        settings[source.source] = { visible: true };
+      });
+      settings.order = originalHotData.map((s) => s.source);
+    }
+
+    hotData.forEach(async (source) => {
+      const sourceName = source.source;
+
+      setLoadingSources((prev) => ({ ...prev, [sourceName]: true }));
+      setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }));
+
+      // 判断是否可见
+      const isVisible = settings[sourceName]?.visible ?? true;
+
+      if (!isVisible) {
+        console.log(`${sourceName} 不可见，跳过加载`);
+        setLoadingSources((prev) => ({ ...prev, [sourceName]: false }));
+        return;
+      }
+
+      try {
+        const data = await fetchDataForSource(sourceName);
+
+        setHotData((prev) =>
+          prev.map((item) =>
+            item.source === sourceName ? { ...item, items: data } : item
+          )
+        );
+      } catch (err) {
+        setHotDataErrors((prev) => ({
+          ...prev,
+          [sourceName]: "加载失败，请检查网络连接或稍后重试",
+        }));
+      } finally {
+        setLoadingSources((prev) => ({ ...prev, [sourceName]: false }));
+      }
+    });
+  };
+  // 刷新单个榜单
+  const handleRetry = async (sourceName) => {
+    setLoadingSources((prev) => ({ ...prev, [sourceName]: true }));
+    setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }));
+
+    try {
+      const data = await fetchDataForSource(sourceName);
+      setHotData((prev) =>
+        prev.map((item) =>
+          item.source === sourceName ? { ...item, items: data } : item
+        )
+      );
+    } catch (err) {
+      setHotDataErrors((prev) => ({
+        ...prev,
+        [sourceName]: "刷新失败，请稍后再试。",
+      }));
+    } finally {
+      setLoadingSources((prev) => ({ ...prev, [sourceName]: false }));
+    }
   };
 
-  // 错误页面刷新按钮点击事件
-  const ErrorPageRetryClick = () => {
-    setLoading(true); // 显示骨架屏
-    setError(null); // 重置错误状态
-    setTimeout(() => {
-      setLoading(false); // 数据加载完成，隐藏骨架屏
-    }, 600);
-  };
+  // 初始化
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadAllHotData();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div
@@ -243,26 +262,17 @@ function App() {
       }`}
     >
       <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-        {/* 头部 */}
+        {/* 页面头部 */}
         <Header
           darkMode={darkMode}
           toggleTheme={toggleTheme}
           openSettings={() => setSettingsModalOpen(true)}
         />
 
-        {/* 错误页面 */}
-        {error ? (
-          <ErrorPage
-            message={error}
-            darkMode={darkMode}
-            onRetry={ErrorPageRetryClick}
-          />
-        ) : loading ? (
-          // 骨架屏加载
-          <SkeletonLoader count={hotData.length} />
-        ) : hotData.filter(
-            (source) => sourceSettings[source.source]?.visible ?? true
-          ).length === 0 ? (
+        {hotData.filter(
+          (source) => sourceSettings[source.source]?.visible ?? true
+        ).length === 0 ? (
+          /* 没有可见榜单时显示提示 */
           <div className="text-center py-12">
             <i className="fas fa-info-circle text-gray-500 dark:text-gray-400 text-5xl mb-4"></i>
             <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -279,6 +289,7 @@ function App() {
             </button>
           </div>
         ) : (
+          /* 正常渲染榜单卡片 */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {hotData
               .filter(
@@ -289,8 +300,9 @@ function App() {
                   key={idx}
                   sourceData={sourceData}
                   openModal={openModal}
-                  error={hotDataErrors[sourceData.source]} // 传入错误信息
-                  handleRetry={handleRetry}
+                  error={hotDataErrors[sourceData.source]}
+                  loading={loadingSources[sourceData.source]}
+                  handleRetry={() => handleRetry(sourceData.source)}
                 />
               ))}
           </div>
