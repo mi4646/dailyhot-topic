@@ -5,15 +5,11 @@ import HotTopicDetailModal from "./components/HotTopicDetailModal";
 import SettingsModal from "./components/SettingsModal";
 import NotificationToast from "./components/NotificationToast";
 import axios from "axios";
+import { originalSources } from "./mock";
 
 function App() {
   // 状态管理
-  const [hotData, setHotData] = useState([
-    { source: "微博热搜", icon: "fab fa-weibo text-red-500", items: [] },
-    { source: "知乎热榜", icon: "fab fa-zhihu text-blue-600", items: [] },
-    { source: "百度热搜", icon: "fas fa-search text-orange-500", items: [] },
-    { source: "哔哩哔哩", icon: "fas fa-tv text-pink-500", items: [] },
-  ]);
+  const [hotData, setHotData] = useState(originalSources);
   const [loadingSources, setLoadingSources] = useState({});
   const [hotDataErrors, setHotDataErrors] = useState({});
   const [modalLoading, setModalLoading] = useState(false);
@@ -145,24 +141,7 @@ function App() {
 
   // 请求真实榜单数据
   const fetchDataForSource = async (sourceName) => {
-    let url;
-    switch (sourceName) {
-      case "微博热搜":
-        url = "/api-hot/weibo?cache=true";
-        break;
-      case "知乎热榜":
-        url = "/api-hot/zhihu?cache=true";
-        break;
-      case "百度热搜":
-        url = "/api-hot/baidu?cache=true";
-        break;
-      case "哔哩哔哩":
-        url = "/api-hot/bilibili?cache=true";
-        break;
-      default:
-        return [];
-    }
-
+    let url = `/api-hot/${sourceName}?cache=true`;
     try {
       const response = await axios.get(url);
       return response.data.data || []; // 根据接口结构调整
@@ -184,15 +163,11 @@ function App() {
         console.error("localStorage 解析失败", e);
         settings = {};
       }
-    } else {
-      originalHotData.forEach((source) => {
-        settings[source.source] = { visible: true };
-      });
-      settings.order = originalHotData.map((s) => s.source);
     }
 
     hotData.forEach(async (source) => {
       const sourceName = source.source;
+      const name = source.name;
 
       setLoadingSources((prev) => ({ ...prev, [sourceName]: true }));
       setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }));
@@ -207,7 +182,7 @@ function App() {
       }
 
       try {
-        const data = await fetchDataForSource(sourceName);
+        const data = await fetchDataForSource(name);
 
         setHotData((prev) =>
           prev.map((item) =>
@@ -224,13 +199,17 @@ function App() {
       }
     });
   };
+
   // 刷新单个榜单
-  const handleRetry = async (sourceName) => {
+  const handleRetry = async (sourceData) => {
+    const sourceName = sourceData.source;
+    const name = sourceData.name;
+
     setLoadingSources((prev) => ({ ...prev, [sourceName]: true }));
     setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }));
 
     try {
-      const data = await fetchDataForSource(sourceName);
+      const data = await fetchDataForSource(name);
       setHotData((prev) =>
         prev.map((item) =>
           item.source === sourceName ? { ...item, items: data } : item
@@ -302,7 +281,7 @@ function App() {
                   openModal={openModal}
                   error={hotDataErrors[sourceData.source]}
                   loading={loadingSources[sourceData.source]}
-                  handleRetry={() => handleRetry(sourceData.source)}
+                  handleRetry={() => handleRetry(sourceData)}
                 />
               ))}
           </div>
