@@ -140,14 +140,27 @@ function App() {
   };
 
   // 请求真实榜单数据
-  const fetchDataForSource = async (sourceName) => {
-    let url = `/api-hot/${sourceName}?cache=true`;
+  const fetchDataForSource = async (name) => {
+    let url = `/api-hot/${name}?cache=true`;
+    if (name === "zhihu") {
+      url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`;
+    }
+
     try {
       const response = await axios.get(url);
+      if (name === "zhihu") {
+        // 单独处理知乎的数据结构
+        return response.data.data.map((item) => ({
+          title: item.target.title,
+          summary: item.target.excerpt,
+          hot: item.detail_text,
+          url: `https://www.zhihu.com/question/${item.card_id.replace(/^Q_/, '')}`,
+        }));
+      }
       return response.data.data || []; // 根据接口结构调整
     } catch (err) {
-      console.error(`获取 ${sourceName} 数据失败`, err);
-      throw new Error(`无法获取 ${sourceName} 数据`);
+      console.error(`获取 ${name} 数据失败`, err);
+      throw new Error(`无法获取 ${name} 数据`);
     }
   };
 
