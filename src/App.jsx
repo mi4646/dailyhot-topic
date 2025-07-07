@@ -291,7 +291,6 @@ function App() {
     e.currentTarget.style.opacity = "1";
   };
 
-  
   useEffect(() => {
     if (!hotData.length) return;
 
@@ -367,13 +366,10 @@ function App() {
                   data-source={sourceData.source}
                   className="draggable-item min-w-[180px] max-w-xs p-4 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-move hover:shadow-md transition-all duration-200 transform hover:-translate-y-1"
                 >
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-3 space-x-12">
                     <span className="font-medium text-gray-800 dark:text-gray-200">
                       {sourceData.source}
                     </span>
-                    {/* <i className="fas fa-grip-lines text-gray-500 dark:text-gray-400"></i> */}
-                  </div>
-                  <div className="flex justify-between items-center">
                     <label className="inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
