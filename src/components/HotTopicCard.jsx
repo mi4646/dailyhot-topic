@@ -1,7 +1,6 @@
 import { ErrorCard } from "./ErrorPage";
 import DetailSkeleton from "./DetailSkeleton";
 import { formatHot } from "../utils";
-import Tooltip from "./Tooltip";
 
 const HotTopicCard = ({
   sourceData,
@@ -68,7 +67,7 @@ const HotTopicCard = ({
                 >
                   {i + 1}.
                 </span>
-                
+
                 <a
                   href={item.url}
                   title={item.title}
