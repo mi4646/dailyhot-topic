@@ -68,10 +68,13 @@ const HotTopicCard = ({
                   {i + 1}.
                 </span>
 
+                {/* 文章链接 */}
                 <a
                   href={item.url}
                   title={item.title}
                   className="flex-grow truncate text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                  target={sourceData.openInNewTab ? "_blank" : "_self"}
+                  rel={sourceData.openInNewTab ? "noopener noreferrer" : ""}
                 >
                   {item.title}
                 </a>

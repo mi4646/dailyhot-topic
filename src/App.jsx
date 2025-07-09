@@ -51,6 +51,11 @@ function App() {
       settings.order = hotData.map((s) => s.source);
     }
 
+    // 新增默认 openInNewTab 设置
+    if (settings.openInNewTab === undefined) {
+      settings.openInNewTab = true; // 默认在新标签页中打开
+    }
+
     setSourceSettings(settings);
 
     if (settings.order && settings.order.length > 0) {
@@ -58,7 +63,6 @@ function App() {
         (a, b) =>
           settings.order.indexOf(a.source) - settings.order.indexOf(b.source)
       );
-
       setHotData(ordered);
     } else {
       setHotData(hotData);
@@ -71,7 +75,6 @@ function App() {
       initialLoading[source.source] = false;
       initialErrors[source.source] = null;
     });
-
     setLoadingSources(initialLoading);
     setHotDataErrors(initialErrors);
 
@@ -100,7 +103,12 @@ function App() {
 
   // 保存设置
   const saveSettings = () => {
-    localStorage.setItem("hotTopicSettings", JSON.stringify(sourceSettings));
+    const newSettings = {
+      ...sourceSettings,
+      openInNewTab: sourceSettings.openInNewTab ?? true, // 显式保留 openInNewTab 值
+    };
+
+    localStorage.setItem("hotTopicSettings", JSON.stringify(newSettings));
     showNotification("设置已保存！");
     window.location.hash = ""; // 返回主页
     setIsSettingsPage(false);
@@ -389,6 +397,32 @@ function App() {
             </div>
           </div>
 
+          {/* 榜单链接打开方式 */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
+            <h3 className="text-xl font-semibold mb-4">链接打开方式</h3>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 dark:text-gray-300">
+                是否在新标签页中打开链接？
+              </span>
+              <label className="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={sourceSettings.openInNewTab ?? true}
+                  onChange={(e) =>
+                    setSourceSettings((prev) => ({
+                      ...prev,
+                      openInNewTab: e.target.checked,
+                    }))
+                  }
+                  className="sr-only peer"
+                />
+                <div className="relative w-11 h-6 bg-gray-300 peer-checked:bg-blue-600 rounded-full transition-colors">
+                  <div className="absolute w-5 h-5 bg-white dark:bg-gray-200 rounded-full top-0.5 left-0.5 peer-checked:left-6 transition-transform duration-200"></div>
+                </div>
+              </label>
+            </div>
+          </div>
+
           {/* 底部按钮 */}
           <div className="mt-8 flex justify-end space-x-4">
             <button
@@ -458,7 +492,10 @@ function App() {
               .map((sourceData, idx) => (
                 <HotTopicCard
                   key={idx}
-                  sourceData={sourceData}
+                  sourceData={{
+                    ...sourceData,
+                    openInNewTab: sourceSettings.openInNewTab ?? true,
+                  }}
                   openModal={openModal}
                   error={hotDataErrors[sourceData.source]}
                   loading={loadingSources[sourceData.source]}
