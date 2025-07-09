@@ -53,7 +53,7 @@ const HotTopicDetailModal = ({
           </span>
         </div>
         <p className="text-gray-600 dark:text-gray-400 text-base ml-12 mt-2">
-          {item.summary || "暂无摘要"}
+          {item.summary || item.desc || "暂无摘要"}
         </p>
       </div>
     ));
