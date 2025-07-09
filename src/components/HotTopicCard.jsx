@@ -1,6 +1,7 @@
 import { ErrorCard } from "./ErrorPage";
 import DetailSkeleton from "./DetailSkeleton";
 import { formatHot } from "../utils";
+import Tooltip from "./Tooltip";
 
 const HotTopicCard = ({
   sourceData,
@@ -67,12 +68,15 @@ const HotTopicCard = ({
                 >
                   {i + 1}.
                 </span>
+                
                 <a
                   href={item.url}
+                  title={item.title}
                   className="flex-grow truncate text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                 >
                   {item.title}
                 </a>
+
                 <span className="ml-3 text-sm text-gray-500 flex-shrink-0">
                   <i className="fas fa-fire text-orange-400 mr-1"></i>
                   {formatHot(item.hot)}
