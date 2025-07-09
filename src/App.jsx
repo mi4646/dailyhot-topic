@@ -4,23 +4,26 @@ import HotTopicCard from "./components/HotTopicCard";
 import HotTopicDetailModal from "./components/HotTopicDetailModal";
 import NotificationToast from "./components/NotificationToast";
 import axios from "axios";
+import { originalSources as originalHotData } from "./mock";
+
+// const originalHotData = originalSources
 
 // 所有支持的平台列表
-const originalHotData = [
-  { source: "微博热搜", icon: "fab fa-weibo text-red-500", items: [] },
-  { source: "知乎热榜", icon: "fab fa-zhihu text-blue-600", items: [] },
-  { source: "百度热搜", icon: "fas fa-search text-orange-500", items: [] },
-  { source: "B站热门", icon: "fas fa-tv text-pink-500", items: [] },
-];
+// const originalHotData = [
+//   { source: "微博热搜", icon: "fab fa-weibo text-red-500", items: [] },
+//   { source: "知乎热榜", icon: "fab fa-zhihu text-blue-600", items: [] },
+//   { source: "百度热搜", icon: "fas fa-search text-orange-500", items: [] },
+//   { source: "B站热门", icon: "fas fa-tv text-pink-500", items: [] },
+// ];
 
 // 假设你有 30+ 来源
-for (let i = 1; i <= 30; i++) {
-  originalHotData.push({
-    source: `平台 ${i}`,
-    icon: "fas fa-globe text-gray-500",
-    items: [],
-  });
-}
+// for (let i = 1; i <= 30; i++) {
+//   originalHotData.push({
+//     source: `平台 ${i}`,
+//     icon: "fas fa-globe text-gray-500",
+//     items: [],
+//   });
+// }
 
 function App() {
   // 状态管理
@@ -195,7 +198,6 @@ function App() {
   const loadAllHotData = () => {
     hotData.forEach(async (source) => {
       const sourceName = source.source;
-
       setLoadingSources((prev) => ({ ...prev, [sourceName]: true }));
       setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }));
 
@@ -207,12 +209,20 @@ function App() {
 
       try {
         const data = await fetchDataForSource(sourceName);
-        setHotData((prev) =>
-          prev.map((item) =>
-            item.source === sourceName ? { ...item, items: data } : item
-          )
-        );
+        if (!data || data.length === 0) {
+          setHotDataErrors((prev) => ({
+            ...prev,
+            [sourceName]: "暂无数据或加载失败",
+          }));
+        } else {
+          setHotData((prev) =>
+            prev.map((item) =>
+              item.source === sourceName ? { ...item, items: data } : item
+            )
+          );
+        }
       } catch (err) {
+        console.error(`加载 ${sourceName} 数据失败`, err);
         setHotDataErrors((prev) => ({
           ...prev,
           [sourceName]: "加载失败，请检查网络连接",
@@ -241,17 +251,23 @@ function App() {
   const handleRetry = async (sourceName) => {
     const source = hotData.find((s) => s.source === sourceName);
     if (!source) return;
-
     setLoadingSources((prev) => ({ ...prev, [sourceName]: true }));
     setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }));
 
     try {
       const data = await fetchDataForSource(sourceName);
-      setHotData((prev) =>
-        prev.map((item) =>
-          item.source === sourceName ? { ...item, items: data } : item
-        )
-      );
+      if (!data || data.length === 0) {
+        setHotDataErrors((prev) => ({
+          ...prev,
+          [sourceName]: "暂无数据或加载失败",
+        }));
+      } else {
+        setHotData((prev) =>
+          prev.map((item) =>
+            item.source === sourceName ? { ...item, items: data } : item
+          )
+        );
+      }
     } catch {
       setHotDataErrors((prev) => ({
         ...prev,
