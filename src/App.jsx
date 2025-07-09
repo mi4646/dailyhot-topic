@@ -6,25 +6,6 @@ import NotificationToast from "./components/NotificationToast";
 import axios from "axios";
 import { originalSources as originalHotData } from "./mock";
 
-// const originalHotData = originalSources
-
-// 所有支持的平台列表
-// const originalHotData = [
-//   { source: "微博热搜", icon: "fab fa-weibo text-red-500", items: [] },
-//   { source: "知乎热榜", icon: "fab fa-zhihu text-blue-600", items: [] },
-//   { source: "百度热搜", icon: "fas fa-search text-orange-500", items: [] },
-//   { source: "B站热门", icon: "fas fa-tv text-pink-500", items: [] },
-// ];
-
-// 假设你有 30+ 来源
-// for (let i = 1; i <= 30; i++) {
-//   originalHotData.push({
-//     source: `平台 ${i}`,
-//     icon: "fas fa-globe text-gray-500",
-//     items: [],
-//   });
-// }
-
 function App() {
   // 状态管理
   const [hotData, setHotData] = useState([...originalHotData]);
@@ -167,30 +148,30 @@ function App() {
   };
 
   // 请求真实榜单数据
-  const fetchDataForSource = async (sourceName) => {
-    let url;
-    switch (sourceName) {
-      case "微博热搜":
-        url = "/api-hot/weibo?cache=true";
-        break;
-      case "知乎热榜":
-        url = "/api-hot/zhihu?cache=true";
-        break;
-      case "百度热搜":
-        url = "/api-hot/baidu?cache=true";
-        break;
-      case "B站热门":
-        url = "/api-hot/bilibili?cache=true";
-        break;
-      default:
-        return [];
+  const fetchDataForSource = async (name) => {
+    let url = `/api-hot/${name}?cache=true`;
+    if (name === "zhihu") {
+      url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`;
     }
 
     try {
       const response = await axios.get(url);
-      return response.data.data || [];
-    } catch {
-      throw new Error(`无法获取 ${sourceName} 数据`);
+      if (name === "zhihu") {
+        // 单独处理知乎的数据结构
+        return response.data.data.map((item) => ({
+          title: item.target.title,
+          summary: item.target.excerpt,
+          hot: item.detail_text,
+          url: `https://www.zhihu.com/question/${item.card_id.replace(
+            /^Q_/,
+            ""
+          )}`,
+        }));
+      }
+      return response.data.data || []; // 根据接口结构调整
+    } catch (err) {
+      console.error(`获取 ${name} 数据失败`, err);
+      throw new Error(`无法获取 ${name} 数据`);
     }
   };
 
@@ -208,7 +189,7 @@ function App() {
       }
 
       try {
-        const data = await fetchDataForSource(sourceName);
+        const data = await fetchDataForSource(source.name);
         if (!data || data.length === 0) {
           setHotDataErrors((prev) => ({
             ...prev,
@@ -255,7 +236,7 @@ function App() {
     setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }));
 
     try {
-      const data = await fetchDataForSource(sourceName);
+      const data = await fetchDataForSource(source.name);
       if (!data || data.length === 0) {
         setHotDataErrors((prev) => ({
           ...prev,
