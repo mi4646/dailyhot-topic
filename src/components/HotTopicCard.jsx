@@ -16,7 +16,7 @@ const HotTopicCard = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full min-h-[500px] transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
       {/* 卡片头部 */}
       {loading ? (
         <div className="animate-pulse flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700 mb-4">
@@ -52,7 +52,9 @@ const HotTopicCard = ({
           <DetailSkeleton />
         ) : error ? (
           // 显示错误提示
-          <ErrorCard message={error} onRetry={() => handleRetry(source)} />
+          <div className="flex items-center justify-center h-full">
+            <ErrorCard message={error} onRetry={() => handleRetry(source)} />
+          </div>
         ) : (
           // 正常榜单内容
           <ol className="space-y-3">
@@ -92,7 +94,7 @@ const HotTopicCard = ({
           <span>更新于: {new Date().toLocaleTimeString()}</span>
           <button
             onClick={() => handleRetry(source)}
-            className="px-3 py-1 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200 flex items-center"
+            className="px-3 py-1 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-full transition-colors duration-200 flex items-center"
           >
             <i className="fas fa-sync-alt mr-2"></i>刷新本榜
           </button>
