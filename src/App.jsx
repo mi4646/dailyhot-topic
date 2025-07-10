@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import Header from "./components/Header";
 import HotTopicCard from "./components/HotTopicCard";
-import HotTopicDetailModal from "./components/HotTopicDetailModal";
+import HotTopicDetailPage from "./components/HotTopicDetailPage";
 import NotificationToast from "./components/NotificationToast";
 import LazyLoadWrapper from "./components/LazyLoadWrapper";
 import axios from "axios";
@@ -17,9 +17,7 @@ function App() {
     message: "",
     show: false,
   });
-  const [modalOpen, setModalOpen] = useState(false);
-  const [currentSource, setCurrentSource] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentDetailSourceName, setCurrentDetailSourceName] = useState(null);
   const [sourceSettings, setSourceSettings] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [isSettingsPage, setIsSettingsPage] = useState(false);
@@ -188,16 +186,8 @@ function App() {
     await loadSingleHotData(sourceName);
   };
 
-  const openModal = (sourceName) => {
-    const source = hotData.find((data) => data.source === sourceName);
-    setCurrentSource(source);
-    setCurrentPage(1);
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setCurrentSource(null);
-    setModalOpen(false);
+  const openDetailPage = (sourceName) => {
+    window.location.hash = `#/detail/${sourceName}`;
   };
 
   useEffect(() => {
@@ -225,8 +215,22 @@ function App() {
 
   useEffect(() => {
     const handleHashChange = () => {
-      setIsSettingsPage(window.location.hash === "#/settings");
+      const hash = window.location.hash;
+
+      if (hash === "#/settings") {
+        setIsSettingsPage(true);
+        setCurrentDetailSourceName(null);
+      } else if (hash.startsWith("#/detail/")) {
+        const sourceName = decodeURIComponent(hash.replace("#/detail/", ""));
+        setIsSettingsPage(false);
+        setCurrentDetailSourceName(sourceName);
+      } else {
+        setIsSettingsPage(false);
+        setCurrentDetailSourceName(null);
+      }
     };
+
+    handleHashChange(); // 初始化触发一次
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
@@ -369,8 +373,17 @@ function App() {
         darkMode ? "dark" : ""
       }`}
     >
-      {isSettingsPage ? (
-        renderSettingsPage()
+      {currentDetailSourceName ? (
+        <HotTopicDetailPage
+          sourceName={currentDetailSourceName}
+          hotData={hotData}
+          sourceSettings={sourceSettings}
+          closePage={() => (window.location.hash = "")}
+        />
+      ) : isSettingsPage ? (
+        <div className="p-6 text-gray-700 dark:text-gray-200">
+          renderSettingsPage()
+        </div>
       ) : (
         <div className="container mx-auto p-4 sm:p-6 lg:p-8">
           <Header
@@ -381,7 +394,6 @@ function App() {
               setIsSettingsPage(true);
             }}
           />
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {hotData
               .filter(
@@ -401,7 +413,7 @@ function App() {
                       ...sourceData,
                       openInNewTab: sourceSettings.openInNewTab ?? true,
                     }}
-                    openModal={openModal}
+                    openModal={openDetailPage}
                     error={hotDataErrors[sourceData.source]}
                     loading={loadingSources[sourceData.source]}
                     handleRetry={() => handleRetry(sourceData.source)}
@@ -410,17 +422,6 @@ function App() {
               ))}
           </div>
         </div>
-      )}
-
-      {modalOpen && currentSource && (
-        <HotTopicDetailModal
-          currentSource={currentSource}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          modalOpen={modalOpen}
-          closeModal={closeModal}
-          loading={false}
-        />
       )}
 
       <NotificationToast
