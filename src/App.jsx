@@ -381,9 +381,8 @@ function App() {
           closePage={() => (window.location.hash = "")}
         />
       ) : isSettingsPage ? (
-        <div className="p-6 text-gray-700 dark:text-gray-200">
-          renderSettingsPage()
-        </div>
+        // 设置页
+        renderSettingsPage()
       ) : (
         <div className="container mx-auto p-4 sm:p-6 lg:p-8">
           <Header

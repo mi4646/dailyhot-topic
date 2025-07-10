@@ -35,8 +35,9 @@ const HotTopicCard = ({
           <button
             onClick={(e) => {
               e.stopPropagation(); // 避免卡片整体点击逻辑
-              openModal(source); // 这里应该传的是 source.source，而不是整个对象
+              openModal(source);
             }}
+            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center"
           >
             更多 <i className="fas fa-arrow-right ml-1 text-xs"></i>
           </button>
