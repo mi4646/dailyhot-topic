@@ -1,26 +1,51 @@
-# 📄 今日热榜
 
-这是一个使用 **React + TailwindCSS** 构建的“今日热榜”聚合展示平台，支持以下功能：
+# 🔥 Hot Topics Aggregator
 
-- 多个平台热榜展示（微博热搜、知乎热榜、百度热搜、B站热门等）；
-- 点击「更多」查看完整榜单详情；
-- 支持分页浏览；
-- 暗黑/亮色主题切换；
-- 自定义榜单排序与显示设置；
-- 响应式布局，适配移动端与桌面端；
-- 使用 `localStorage` 保存用户偏好。
+一个聚合多个平台热榜数据的 React 应用，支持深色模式、详情页浏览、自定义设置等功能，帮助你快速了解全网热点趋势。
+---
+
+## ✨ 功能特色
+
+- 🚀 支持多个平台的热榜数据（如：知乎、微博、抖音等）
+- 🎨 深色 / 浅色主题切换
+- 🔍 平台可见性设置、顺序自定义
+- 🔗 设置链接是否新标签页打开
+- 🧠 智能懒加载，仅加载进入视图的卡片数据
+- 📱 响应式设计，适配桌面与移动端
+- 📄 详情页支持分页浏览，更清晰的热点摘要
+- 📦 本地缓存设置，自动恢复用户配置
 
 ---
 
-## 🔧 技术栈
+## 🛠 技术栈
 
-| 技术 | 描述 |
-|------|------|
-| React | 构建组件化结构 |
-| TailwindCSS | 快速构建现代响应式 UI 样式 |
-| Font Awesome | 图标库支持 |
-| localStorage | 用户设置本地持久化存储 |
-| 原生 JavaScript 拖拽 API | 实现榜单拖拽排序 |
+- **React** + **Hooks**（状态与生命周期管理）
+- **Vite**（快速构建工具）
+- **Tailwind CSS**（快速现代化样式）
+- **Axios**（请求 API 接口）
+- **Font Awesome**（图标系统）
+
+---
+
+## 📦 安装与运行
+
+```bash
+# 克隆项目
+git clone https://github.com/your-username/hot-topics-aggregator.git
+cd hot-topics-aggregator
+
+# 安装依赖
+npm install
+
+# 本地开发启动
+npm run dev
+
+# 构建生产环境
+npm run build
+
+# 本地预览构建结果
+npm run preview
+```
 
 ---
 
@@ -28,44 +53,46 @@
 
 ```
 src/
-├── App.jsx                 # 主入口组件
-├── index.css               # 全局样式文件
-├── tailwind.config.js      # TailwindCSS 配置
-└── components/
-    ├── HotTopicCard.jsx        # 单个热榜卡片组件
-    ├── HotTopicDetailModal.jsx # 详情页模态框
-    ├── SettingsModal.jsx       # 设置模态框
-    ├── Toast.jsx              # 提示信息组件
-	  ├── SkeletonLoader.jsx     # 首页骨架屏
-	  └── DetailSkeleton.jsx     # 详情页骨架屏
+├── assets/            # 静态资源
+├── components/        # 可复用 UI 组件
+│   ├── Header.jsx
+│   ├── DetailSkeleton.jsx
+│   ├── ErrorPage.jsx
+│   ├── HotTopicCard.jsx
+│   ├── HotTopicDetailPage.jsx
+│   ├── LazyLoadWrapper.jsx
+│   ├── NotificationToast.jsx
+│   └── LazyLoadWrapper.jsx
+├── mock/              # 本地模拟数据
+├── utils/             # 工具函数
+├── App.jsx            # 主入口组件
+└── main.jsx           # 入口文件
 ```
 
 ---
 
-## 🚀 快速启动
+## ⚙️ 设置说明
 
-```bash
-# 安装依赖
-npm install
+点击右上角的 **设置按钮** 可以进入设置页面：
 
-# 启动开发服务器
-npm start
-```
+- ✅ 显示/隐藏平台：控制是否展示特定榜单
+- 🔃 自定义榜单顺序（手动控制顺序，支持后续拓展拖拽）
+- 🌐 控制链接是否在新标签页打开
+- 🧹 一键恢复默认设置
 
-访问 [http://localhost:3000](http://localhost:3000) 查看页面。
+设置项会保存在 `localStorage` 中，刷新页面或重启浏览器后仍能保留。
 
 ---
 
-## 📦 第三方依赖
+## 🌐 路由说明（基于 Hash）
 
-确保你已安装以下依赖：
+| 路径               | 说明             |
+|--------------------|------------------|
+| `/`                | 首页热榜聚合      |
+| `#/settings`       | 设置页面         |
+| `#/detail/平台名`  | 某个平台详情页   |
 
-```bash
-npm install @fortawesome/fontawesome-svg-core
-npm install @fortawesome/free-solid-svg-icons
-npm install @fortawesome/react-fontawesome
-```
-
+---
 ## 📌 注意事项
 
 - 本项目不依赖任何第三方 UI 库（如 Ant Design、MUI）；
@@ -90,7 +117,7 @@ npm install @fortawesome/react-fontawesome
 
 ## 📜 许可证
 
-MIT License
+MIT License © 2025 [Your Name or Team]
 
 ---
 
@@ -99,3 +126,5 @@ MIT License
 感谢你选择本项目！如果你觉得它对你有帮助，请给一个 Star 或分享给朋友！
 
 如有问题或建议，请随时提 Issues 或联系作者。
+
+本项目仅作学习与交流用途，如需商用请确保数据来源合法合规。
