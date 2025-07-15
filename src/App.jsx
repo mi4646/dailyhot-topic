@@ -6,6 +6,7 @@ import NotificationToast from "./components/NotificationToast";
 import LazyLoadWrapper from "./components/LazyLoadWrapper";
 import axios from "axios";
 import { originalSources as originalHotData } from "./mock";
+import { isTauri } from "./utils"; 
 
 function App() {
   const [hotData, setHotData] = useState([...originalHotData]);
@@ -122,25 +123,78 @@ function App() {
   };
 
   const fetchDataForSource = async (name) => {
+    // 开发环境 URL
     let url = `/api-hot/${name}?cache=true`;
     if (name === "zhihu") {
       url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`;
     }
 
-    const response = await axios.get(url);
-    if (name === "zhihu") {
-      return response.data.data.map((item) => ({
-        title: item.target.title,
-        summary: item.target.excerpt,
-        hot: item.detail_text,
-        url: `https://www.zhihu.com/question/${item.card_id.replace(
-          /^Q_/,
-          ""
-        )}`,
-      }));
+    console.log(isTauri(), "isTauri");
+    if (isTauri()) {
+      try {
+        console.log("Running in Tauri environment");
+
+        const { invoke } = await import("@tauri-apps/api/core");
+        console.log("Invoking Tauri command to fetch hot data for:", name);
+
+        const raw = await invoke("fetch_hot_data", { name });
+        console.log("Raw data from Tauri:", raw);
+        const responseData = JSON.parse(raw);
+
+        if (name === "zhihu") {
+          return responseData.data.map((item) => ({
+            title: item.target.title,
+            summary: item.target.excerpt,
+            hot: item.detail_text,
+            url: `https://www.zhihu.com/question/${item.card_id.replace(
+              /^Q_/,
+              ""
+            )}`,
+          }));
+        }
+
+        return responseData.data || [];
+      } catch (err) {
+        console.error("Error invoking fetch_hot_data from Tauri:", err);
+        return [];
+      }
+    } else {
+      const response = await axios.get(url);
+      if (name === "zhihu") {
+        return response.data.data.map((item) => ({
+          title: item.target.title,
+          summary: item.target.excerpt,
+          hot: item.detail_text,
+          url: `https://www.zhihu.com/question/${item.card_id.replace(
+            /^Q_/,
+            ""
+          )}`,
+        }));
+      }
+      return response.data.data || [];
     }
-    return response.data.data || [];
   };
+
+  // const fetchDataForSource = async (name) => {
+  //   let url = `/api-hot/${name}?cache=true`;
+  //   if (name === "zhihu") {
+  //     url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`;
+  //   }
+
+  //   const response = await axios.get(url);
+  //   if (name === "zhihu") {
+  //     return response.data.data.map((item) => ({
+  //       title: item.target.title,
+  //       summary: item.target.excerpt,
+  //       hot: item.detail_text,
+  //       url: `https://www.zhihu.com/question/${item.card_id.replace(
+  //         /^Q_/,
+  //         ""
+  //       )}`,
+  //     }));
+  //   }
+  //   return response.data.data || [];
+  // };
 
   const loadSingleHotData = async (sourceName) => {
     const source = hotData.find((s) => s.source === sourceName);
