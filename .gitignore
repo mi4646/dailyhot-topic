@@ -7,18 +7,50 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Node
+node_modules/
+
+# Vite
+dist/
+dist-ssr/
+.vite/
 *.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Tauri (Rust-related)
+src-tauri/target/
+src-tauri/Cargo.lock
+src-tauri/.cargo/
+src-tauri/bundle/
+
+# Tauri icons
+src-tauri/icons/*.ico
+src-tauri/icons/*.png
+
+# Rust global target folder (if accidentally created at root)
+target/
+
+# Optional: release build output
+/release/
+
+# Optional: system files and local artifacts
+*.db
+*.sqlite
+*.bak
+*.tmp
+*~
+
+# macOS & Linux thumbnail files
+ehthumbs.db
+Thumbs.db
+
