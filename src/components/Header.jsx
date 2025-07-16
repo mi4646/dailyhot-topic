@@ -25,7 +25,7 @@ const Header = ({ darkMode, toggleTheme, openSettings }) => {
         <i className="fas fa-cog text-xl"></i>
       </button>
     </h1>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

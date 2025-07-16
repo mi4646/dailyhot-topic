@@ -1,28 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react'
 
-const LazyLoadWrapper = ({ onVisible, children, rootMargin = "100px" }) => {
-  const ref = useRef();
-  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+const LazyLoadWrapper = ({ onVisible, children, rootMargin = '100px' }) => {
+  const ref = useRef()
+  const [hasBeenVisible, setHasBeenVisible] = useState(false)
 
   useEffect(() => {
-    if (hasBeenVisible) return;
+    if (hasBeenVisible) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setHasBeenVisible(true);
-          onVisible();
-          observer.disconnect();
+          setHasBeenVisible(true)
+          onVisible()
+          observer.disconnect()
         }
       },
       { rootMargin }
-    );
+    )
 
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [hasBeenVisible, onVisible, rootMargin]);
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [hasBeenVisible, onVisible, rootMargin])
 
-  return <div ref={ref}>{children}</div>;
-};
+  return <div ref={ref}>{children}</div>
+}
 
-export default LazyLoadWrapper;
+export default LazyLoadWrapper

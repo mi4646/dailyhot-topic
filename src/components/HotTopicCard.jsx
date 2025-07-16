@@ -1,6 +1,6 @@
-import { ErrorCard } from "./ErrorPage";
-import DetailSkeleton from "./DetailSkeleton";
-import { formatHot } from "../utils";
+import { ErrorCard } from './ErrorPage'
+import DetailSkeleton from './DetailSkeleton'
+import { formatHot } from '../utils'
 
 const HotTopicCard = ({
   sourceData,
@@ -9,11 +9,11 @@ const HotTopicCard = ({
   loading = false,
   handleRetry,
 }) => {
-  const { source, icon, items } = sourceData;
+  const { source, icon, items } = sourceData
 
   const handleClick = () => {
-    openModal(source);
-  };
+    openModal(source)
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full min-h-[500px] transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
@@ -34,8 +34,8 @@ const HotTopicCard = ({
           </h2>
           <button
             onClick={(e) => {
-              e.stopPropagation(); // 避免卡片整体点击逻辑
-              openModal(source);
+              e.stopPropagation() // 避免卡片整体点击逻辑
+              openModal(source)
             }}
             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 text-sm font-medium flex items-center"
           >
@@ -47,7 +47,7 @@ const HotTopicCard = ({
       {/* 内容区域 */}
       <div
         className="flex-grow overflow-y-auto pr-2 hot-list-scroll"
-        style={{ maxHeight: "400px" }}
+        style={{ maxHeight: '400px' }}
       >
         {loading ? (
           // 显示骨架屏
@@ -64,7 +64,7 @@ const HotTopicCard = ({
               <li key={i} className="flex items-center group">
                 <span
                   className={`font-bold text-lg mr-3 w-6 text-center ${
-                    i < 3 ? "text-red-500" : "text-gray-500"
+                    i < 3 ? 'text-red-500' : 'text-gray-500'
                   }`}
                 >
                   {i + 1}.
@@ -75,8 +75,8 @@ const HotTopicCard = ({
                   href={item.url}
                   title={item.title}
                   className="flex-grow truncate text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
-                  target={sourceData.openInNewTab ? "_blank" : "_self"}
-                  rel={sourceData.openInNewTab ? "noopener noreferrer" : ""}
+                  target={sourceData.openInNewTab ? '_blank' : '_self'}
+                  rel={sourceData.openInNewTab ? 'noopener noreferrer' : ''}
                 >
                   {item.title}
                 </a>
@@ -109,7 +109,7 @@ const HotTopicCard = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default HotTopicCard;
+export default HotTopicCard

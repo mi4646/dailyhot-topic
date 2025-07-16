@@ -14,7 +14,7 @@ const DetailSkeleton = () => {
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default DetailSkeleton;
+export default DetailSkeleton

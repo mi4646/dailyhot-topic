@@ -12,5 +12,5 @@ export const ErrorCard = ({ message, onRetry }) => {
         <span>重试</span>
       </button>
     </div>
-  );
-};
+  )
+}

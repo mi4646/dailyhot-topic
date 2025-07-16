@@ -7,7 +7,18 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri dev",
+    "tauri:info": "tauri info",
+    "tauri:clean": "tauri clean",
+    "tauri:build": "tauri build",
+    "build:win": "tauri build --target x86_64-pc-windows-msvc",
+    "build:win:x64": "tauri build --target x86_64-pc-windows-msvc",
+    "build:win:x86": "tauri build --target i686-pc-windows-msvc",
+    "build:android": "cd src-tauri && cargo ndk -t arm64-v8a -p android build --release",
+    "lint": "eslint . --ext .js,.ts,.tsx,.vue,.jsx,.svelte",
+    "format": "prettier --write .",
+    "clean:dist": "rimraf dist src-tauri/target",
+    "clean:all": "npm run clean:dist && cd src-tauri && cargo clean"
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -29,6 +40,8 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.17",
     "vite": "^6.3.5"
   }

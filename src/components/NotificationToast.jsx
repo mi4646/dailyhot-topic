@@ -1,22 +1,22 @@
 // src/components/NotificationToast.jsx
 // 通知 Toast 组件
 
-const Toast = ({ message, type = "default", isVisible }) => {
-  if (!isVisible) return null;
+const Toast = ({ message, type = 'default', isVisible }) => {
+  if (!isVisible) return null
 
   const bgColor = {
-    default: "bg-gray-800",
-    success: "bg-green-600",
-    warning: "bg-yellow-500",
-    error: "bg-red-600",
-  };
+    default: 'bg-gray-800',
+    success: 'bg-green-600',
+    warning: 'bg-yellow-500',
+    error: 'bg-red-600',
+  }
 
   const icon = {
-    default: "fas fa-info-circle",
-    success: "fas fa-check-circle",
-    warning: "fas fa-exclamation-triangle",
-    error: "fas fa-exclamation-circle",
-  };
+    default: 'fas fa-info-circle',
+    success: 'fas fa-check-circle',
+    warning: 'fas fa-exclamation-triangle',
+    error: 'fas fa-exclamation-circle',
+  }
 
   return (
     <div
@@ -25,7 +25,7 @@ const Toast = ({ message, type = "default", isVisible }) => {
       <i className={`${icon[type]} mr-2`}></i>
       <span>{message}</span>
     </div>
-  );
-};
+  )
+}
 
-export default Toast;
+export default Toast

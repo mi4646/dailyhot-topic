@@ -1,116 +1,116 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
-import Header from "./components/Header";
-import HotTopicCard from "./components/HotTopicCard";
-import HotTopicDetailPage from "./components/HotTopicDetailPage";
-import NotificationToast from "./components/NotificationToast";
-import LazyLoadWrapper from "./components/LazyLoadWrapper";
-import axios from "axios";
-import { originalSources as originalHotData } from "./mock";
-import { isTauri } from "./utils"; 
+import React, { useState, useEffect, useLayoutEffect } from 'react'
+import Header from './components/Header'
+import HotTopicCard from './components/HotTopicCard'
+import HotTopicDetailPage from './components/HotTopicDetailPage'
+import NotificationToast from './components/NotificationToast'
+import LazyLoadWrapper from './components/LazyLoadWrapper'
+import axios from 'axios'
+import { originalSources as originalHotData } from './mock'
+import { isTauri } from './utils'
 
 function App() {
-  const [hotData, setHotData] = useState([...originalHotData]);
-  const [loadingSources, setLoadingSources] = useState({});
-  const [hotDataErrors, setHotDataErrors] = useState({});
-  const [loadedSources, setLoadedSources] = useState({});
-  const [darkMode, setDarkMode] = useState(false);
+  const [hotData, setHotData] = useState([...originalHotData])
+  const [loadingSources, setLoadingSources] = useState({})
+  const [hotDataErrors, setHotDataErrors] = useState({})
+  const [loadedSources, setLoadedSources] = useState({})
+  const [darkMode, setDarkMode] = useState(false)
   const [notification, setNotification] = useState({
-    message: "",
+    message: '',
     show: false,
-  });
-  const [currentDetailSourceName, setCurrentDetailSourceName] = useState(null);
-  const [sourceSettings, setSourceSettings] = useState({});
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isSettingsPage, setIsSettingsPage] = useState(false);
+  })
+  const [currentDetailSourceName, setCurrentDetailSourceName] = useState(null)
+  const [sourceSettings, setSourceSettings] = useState({})
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isSettingsPage, setIsSettingsPage] = useState(false)
 
   useLayoutEffect(() => {
-    const savedTheme = localStorage.getItem("theme") === "dark";
-    setDarkMode(savedTheme);
-    document.documentElement.classList.toggle("dark", savedTheme);
+    const savedTheme = localStorage.getItem('theme') === 'dark'
+    setDarkMode(savedTheme)
+    document.documentElement.classList.toggle('dark', savedTheme)
 
-    const savedSettings = localStorage.getItem("hotTopicSettings");
-    let settings = {};
+    const savedSettings = localStorage.getItem('hotTopicSettings')
+    let settings = {}
 
     if (savedSettings) {
       try {
-        settings = JSON.parse(savedSettings);
+        settings = JSON.parse(savedSettings)
       } catch {
-        settings = {};
+        settings = {}
       }
     } else {
       hotData.forEach((source) => {
-        settings[source.source] = { visible: true };
-      });
-      settings.order = hotData.map((s) => s.source);
+        settings[source.source] = { visible: true }
+      })
+      settings.order = hotData.map((s) => s.source)
     }
 
     if (settings.openInNewTab === undefined) {
-      settings.openInNewTab = true;
+      settings.openInNewTab = true
     }
 
-    setSourceSettings(settings);
+    setSourceSettings(settings)
 
     if (settings.order && settings.order.length > 0) {
       const ordered = [...hotData].sort(
         (a, b) =>
           settings.order.indexOf(a.source) - settings.order.indexOf(b.source)
-      );
-      setHotData(ordered);
+      )
+      setHotData(ordered)
     }
 
-    const initialLoading = {};
-    const initialErrors = {};
+    const initialLoading = {}
+    const initialErrors = {}
     hotData.forEach((source) => {
-      initialLoading[source.source] = false;
-      initialErrors[source.source] = null;
-    });
+      initialLoading[source.source] = false
+      initialErrors[source.source] = null
+    })
 
-    setLoadingSources(initialLoading);
-    setHotDataErrors(initialErrors);
-    setIsSettingsPage(window.location.hash === "#/settings");
-  }, []);
+    setLoadingSources(initialLoading)
+    setHotDataErrors(initialErrors)
+    setIsSettingsPage(window.location.hash === '#/settings')
+  }, [])
 
   const toggleTheme = () => {
-    const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    localStorage.setItem("theme", newDarkMode ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", newDarkMode);
-  };
+    const newDarkMode = !darkMode
+    setDarkMode(newDarkMode)
+    localStorage.setItem('theme', newDarkMode ? 'dark' : 'light')
+    document.documentElement.classList.toggle('dark', newDarkMode)
+  }
 
   const showNotification = (message) => {
-    setNotification({ message, show: true });
-    setTimeout(() => setNotification({ message: "", show: false }), 2000);
-  };
+    setNotification({ message, show: true })
+    setTimeout(() => setNotification({ message: '', show: false }), 2000)
+  }
 
   const saveSettings = () => {
     const newSettings = {
       ...sourceSettings,
       openInNewTab: sourceSettings.openInNewTab ?? true,
-    };
-    localStorage.setItem("hotTopicSettings", JSON.stringify(newSettings));
-    showNotification("设置已保存！");
-    window.location.hash = "";
-    setIsSettingsPage(false);
-  };
+    }
+    localStorage.setItem('hotTopicSettings', JSON.stringify(newSettings))
+    showNotification('设置已保存！')
+    window.location.hash = ''
+    setIsSettingsPage(false)
+  }
 
   const resetSettings = () => {
-    localStorage.removeItem("hotTopicSettings");
-    const defaultSettings = {};
+    localStorage.removeItem('hotTopicSettings')
+    const defaultSettings = {}
     originalHotData.forEach((source) => {
-      defaultSettings[source.source] = { visible: true };
-    });
-    defaultSettings.order = originalHotData.map((s) => s.source);
-    setSourceSettings(defaultSettings);
+      defaultSettings[source.source] = { visible: true }
+    })
+    defaultSettings.order = originalHotData.map((s) => s.source)
+    setSourceSettings(defaultSettings)
 
     const orderedList = [...hotData].sort(
       (a, b) =>
         defaultSettings.order.indexOf(a.source) -
         defaultSettings.order.indexOf(b.source)
-    );
-    setHotData(orderedList);
-    showNotification("设置已恢复为默认值！");
-    window.location.hash = "";
-  };
+    )
+    setHotData(orderedList)
+    showNotification('设置已恢复为默认值！')
+    window.location.hash = ''
+  }
 
   const handleSourceVisibilityChange = (sourceName, isVisible) => {
     setSourceSettings((prev) => ({
@@ -119,61 +119,61 @@ function App() {
         ...prev[sourceName],
         visible: isVisible,
       },
-    }));
-  };
+    }))
+  }
 
   const fetchDataForSource = async (name) => {
     // 开发环境 URL
-    let url = `/api-hot/${name}?cache=true`;
-    if (name === "zhihu") {
-      url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`;
+    let url = `/api-hot/${name}?cache=true`
+    if (name === 'zhihu') {
+      url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`
     }
 
-    console.log(isTauri(), "isTauri");
+    console.log(isTauri(), 'isTauri')
     if (isTauri()) {
       try {
-        console.log("Running in Tauri environment");
+        console.log('Running in Tauri environment')
 
-        const { invoke } = await import("@tauri-apps/api/core");
-        console.log("Invoking Tauri command to fetch hot data for:", name);
+        const { invoke } = await import('@tauri-apps/api/core')
+        console.log('Invoking Tauri command to fetch hot data for:', name)
 
-        const raw = await invoke("fetch_hot_data", { name });
-        console.log("Raw data from Tauri:", raw);
-        const responseData = JSON.parse(raw);
+        const raw = await invoke('fetch_hot_data', { name })
+        console.log('Raw data from Tauri:', raw)
+        const responseData = JSON.parse(raw)
 
-        if (name === "zhihu") {
+        if (name === 'zhihu') {
           return responseData.data.map((item) => ({
             title: item.target.title,
             summary: item.target.excerpt,
             hot: item.detail_text,
             url: `https://www.zhihu.com/question/${item.card_id.replace(
               /^Q_/,
-              ""
+              ''
             )}`,
-          }));
+          }))
         }
 
-        return responseData.data || [];
+        return responseData.data || []
       } catch (err) {
-        console.error("Error invoking fetch_hot_data from Tauri:", err);
-        return [];
+        console.error('Error invoking fetch_hot_data from Tauri:', err)
+        return []
       }
     } else {
-      const response = await axios.get(url);
-      if (name === "zhihu") {
+      const response = await axios.get(url)
+      if (name === 'zhihu') {
         return response.data.data.map((item) => ({
           title: item.target.title,
           summary: item.target.excerpt,
           hot: item.detail_text,
           url: `https://www.zhihu.com/question/${item.card_id.replace(
             /^Q_/,
-            ""
+            ''
           )}`,
-        }));
+        }))
       }
-      return response.data.data || [];
+      return response.data.data || []
     }
-  };
+  }
 
   // const fetchDataForSource = async (name) => {
   //   let url = `/api-hot/${name}?cache=true`;
@@ -197,65 +197,68 @@ function App() {
   // };
 
   const loadSingleHotData = async (sourceName) => {
-    const source = hotData.find((s) => s.source === sourceName);
-    if (!source || loadedSources[sourceName]) return;
+    const source = hotData.find((s) => s.source === sourceName)
+    if (!source || loadedSources[sourceName]) return
 
-    const isVisible = sourceSettings[sourceName]?.visible ?? true;
-    if (!isVisible) return;
+    const isVisible = sourceSettings[sourceName]?.visible ?? true
+    if (!isVisible) return
 
-    setLoadingSources((prev) => ({ ...prev, [sourceName]: true }));
-    setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }));
+    setLoadingSources((prev) => ({ ...prev, [sourceName]: true }))
+    setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }))
 
     try {
-      const data = await fetchDataForSource(source.name);
+      const data = await fetchDataForSource(source.name)
       if (!data || data.length === 0) {
         setHotDataErrors((prev) => ({
           ...prev,
-          [sourceName]: "暂无数据或加载失败",
-        }));
+          [sourceName]: '暂无数据或加载失败',
+        }))
       } else {
         setHotData((prev) =>
           prev.map((item) =>
             item.source === sourceName ? { ...item, items: data } : item
           )
-        );
-        setLoadedSources((prev) => ({ ...prev, [sourceName]: true }));
+        )
+        setLoadedSources((prev) => ({ ...prev, [sourceName]: true }))
       }
     } catch {
       setHotDataErrors((prev) => ({
         ...prev,
-        [sourceName]: "加载失败，请检查网络连接",
-      }));
+        [sourceName]: '加载失败，请检查网络连接',
+      }))
     } finally {
-      setLoadingSources((prev) => ({ ...prev, [sourceName]: false }));
+      setLoadingSources((prev) => ({ ...prev, [sourceName]: false }))
     }
-  };
+  }
 
   const handleRetry = async (sourceName) => {
     setLoadedSources((prev) => {
-      const copy = { ...prev };
-      delete copy[sourceName];
-      return copy;
-    });
-    await loadSingleHotData(sourceName);
-  };
+      const copy = { ...prev }
+      delete copy[sourceName]
+      return copy
+    })
+    await loadSingleHotData(sourceName)
+  }
 
   const openDetailPage = (sourceName) => {
-    window.location.hash = `#/detail/${sourceName}`;
-  };
+    window.location.hash = `#/detail/${sourceName}`
+  }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      Object.keys(loadedSources).forEach((source) => {
-        loadSingleHotData(source);
-      });
-    }, 5 * 60 * 1000);
+    const interval = setInterval(
+      () => {
+        Object.keys(loadedSources).forEach((source) => {
+          loadSingleHotData(source)
+        })
+      },
+      5 * 60 * 1000
+    )
 
-    return () => clearInterval(interval);
-  }, [loadedSources]);
+    return () => clearInterval(interval)
+  }, [loadedSources])
 
   useEffect(() => {
-    const newOrder = hotData.map((item) => item.source);
+    const newOrder = hotData.map((item) => item.source)
     if (
       !sourceSettings.order ||
       JSON.stringify(sourceSettings.order) !== JSON.stringify(newOrder)
@@ -263,31 +266,31 @@ function App() {
       setSourceSettings((prev) => ({
         ...prev,
         order: newOrder,
-      }));
+      }))
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash;
+      const hash = window.location.hash
 
-      if (hash === "#/settings") {
-        setIsSettingsPage(true);
-        setCurrentDetailSourceName(null);
-      } else if (hash.startsWith("#/detail/")) {
-        const sourceName = decodeURIComponent(hash.replace("#/detail/", ""));
-        setIsSettingsPage(false);
-        setCurrentDetailSourceName(sourceName);
+      if (hash === '#/settings') {
+        setIsSettingsPage(true)
+        setCurrentDetailSourceName(null)
+      } else if (hash.startsWith('#/detail/')) {
+        const sourceName = decodeURIComponent(hash.replace('#/detail/', ''))
+        setIsSettingsPage(false)
+        setCurrentDetailSourceName(sourceName)
       } else {
-        setIsSettingsPage(false);
-        setCurrentDetailSourceName(null);
+        setIsSettingsPage(false)
+        setCurrentDetailSourceName(null)
       }
-    };
+    }
 
-    handleHashChange(); // 初始化触发一次
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
+    handleHashChange() // 初始化触发一次
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
 
   const renderSettingsPage = () => {
     const filteredSources = hotData
@@ -297,15 +300,15 @@ function App() {
       .map((source) => ({
         ...source,
         isVisible: sourceSettings[source.source]?.visible ?? true,
-      }));
+      }))
 
     return (
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <button
             onClick={() => {
-              window.location.hash = "";
-              setIsSettingsPage(false);
+              window.location.hash = ''
+              setIsSettingsPage(false)
             }}
             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 flex items-center mb-6"
           >
@@ -332,22 +335,22 @@ function App() {
                   key={idx}
                   draggable
                   onDragStart={(e) => {
-                    e.currentTarget.style.opacity = "0.4";
-                    e.dataTransfer.setData("draggedIndex", idx);
+                    e.currentTarget.style.opacity = '0.4'
+                    e.dataTransfer.setData('draggedIndex', idx)
                   }}
                   onDrop={(e) => {
-                    e.preventDefault();
+                    e.preventDefault()
                     const draggedIndex = parseInt(
-                      e.dataTransfer.getData("draggedIndex"),
+                      e.dataTransfer.getData('draggedIndex'),
                       10
-                    );
-                    const newList = [...hotData];
-                    const draggedItem = newList[draggedIndex];
-                    newList.splice(draggedIndex, 1);
-                    newList.splice(idx, 0, draggedItem);
-                    setHotData(newList);
+                    )
+                    const newList = [...hotData]
+                    const draggedItem = newList[draggedIndex]
+                    newList.splice(draggedIndex, 1)
+                    newList.splice(idx, 0, draggedItem)
+                    setHotData(newList)
                   }}
-                  onDragEnd={(e) => (e.currentTarget.style.opacity = "1")}
+                  onDragEnd={(e) => (e.currentTarget.style.opacity = '1')}
                   onDragOver={(e) => e.preventDefault()}
                   className="draggable-item min-w-[180px] max-w-xs p-4 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-move hover:shadow-md transition-all duration-200 transform hover:-translate-y-1"
                 >
@@ -418,13 +421,13 @@ function App() {
           </div>
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <div
       className={`min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300 ${
-        darkMode ? "dark" : ""
+        darkMode ? 'dark' : ''
       }`}
     >
       {currentDetailSourceName ? (
@@ -432,7 +435,7 @@ function App() {
           sourceName={currentDetailSourceName}
           hotData={hotData}
           sourceSettings={sourceSettings}
-          closePage={() => (window.location.hash = "")}
+          closePage={() => (window.location.hash = '')}
         />
       ) : isSettingsPage ? (
         // 设置页
@@ -443,8 +446,8 @@ function App() {
             darkMode={darkMode}
             toggleTheme={toggleTheme}
             openSettings={() => {
-              window.location.hash = "#/settings";
-              setIsSettingsPage(true);
+              window.location.hash = '#/settings'
+              setIsSettingsPage(true)
             }}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -457,7 +460,7 @@ function App() {
                   key={sourceData.source}
                   onVisible={() => {
                     if (!loadedSources[sourceData.source]) {
-                      loadSingleHotData(sourceData.source);
+                      loadSingleHotData(sourceData.source)
                     }
                   }}
                 >
@@ -482,7 +485,7 @@ function App() {
         isVisible={notification.show}
       />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

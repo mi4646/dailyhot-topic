@@ -1,8 +1,8 @@
 // src/pages/HotTopicDetailPage.jsx
 
-import React, { useState } from "react";
-import DetailSkeleton from "../components/DetailSkeleton";
-import { formatHot } from "../utils";
+import React, { useState } from 'react'
+import DetailSkeleton from '../components/DetailSkeleton'
+import { formatHot } from '../utils'
 
 const HotTopicDetailPage = ({
   sourceName,
@@ -10,25 +10,25 @@ const HotTopicDetailPage = ({
   sourceSettings,
   closePage,
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const source = hotData.find((s) => s.source === sourceName);
+  const [currentPage, setCurrentPage] = useState(1)
+  const source = hotData.find((s) => s.source === sourceName)
 
   if (!source) {
     return (
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-gray-500 dark:text-gray-400 text-xl">
         无法找到来源：{sourceName}
       </div>
-    );
+    )
   }
 
-  const ITEMS_PER_PAGE = 10;
-  const items = source.items || [];
-  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, items.length);
+  const ITEMS_PER_PAGE = 10
+  const items = source.items || []
+  const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE)
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, items.length)
 
   const renderItems = () => {
-    if (!items.length) return <DetailSkeleton />;
+    if (!items.length) return <DetailSkeleton />
 
     return items.slice(startIndex, endIndex).map((item, idx) => (
       <div
@@ -38,14 +38,14 @@ const HotTopicDetailPage = ({
         <div className="flex items-center mb-3">
           <span
             className={`text-2xl font-extrabold w-8 text-center mr-4 ${
-              startIndex + idx < 3 ? "text-red-500" : "text-gray-500"
+              startIndex + idx < 3 ? 'text-red-500' : 'text-gray-500'
             }`}
           >
             {startIndex + idx + 1}.
           </span>
           <a
             href={item.url}
-            target={sourceSettings.openInNewTab ? "_blank" : "_self"}
+            target={sourceSettings.openInNewTab ? '_blank' : '_self'}
             rel="noopener noreferrer"
             className="text-lg font-semibold text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 flex-grow transition-colors"
           >
@@ -56,11 +56,11 @@ const HotTopicDetailPage = ({
           </span>
         </div>
         <p className="ml-12 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-          {item.summary || item.desc || "暂无摘要"}
+          {item.summary || item.desc || '暂无摘要'}
         </p>
       </div>
-    ));
-  };
+    ))
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-10 px-4 transition-colors duration-300">
@@ -107,7 +107,7 @@ const HotTopicDetailPage = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default HotTopicDetailPage;
+export default HotTopicDetailPage
