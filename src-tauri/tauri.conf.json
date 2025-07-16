@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "热榜聚合站",
+  "productName": "HotTopicApp",
   "version": "0.1.0",
   "identifier": "com.hotrank.hotrankapp",
   "build": {
