@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "HotTopicApp",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "identifier": "com.hotrank.hotrankapp",
   "build": {
     "frontendDist": "../dist",
@@ -29,15 +29,32 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "useLocalToolsDir": false,
     "icon": [
-      "icons/apple-touch-icon.png",
-      "icons/favicon-96x96.png",
-      "icons/favicon.ico",
-      "icons/favicon.png",
-      "icons/favicon.svg",
-      "icons/web-app-manifest-192x192.png",
-      "icons/web-app-manifest-512x512.png"
-    ]
+       "icons/apple-touch-icon.png",
+        "icons/favicon-96x96.png",
+        "icons/favicon.ico",
+        "icons/favicon.png",
+        "icons/favicon.svg",
+        "icons/web-app-manifest-192x192.png",
+        "icons/web-app-manifest-512x512.png"
+    ],
+     "targets": ["nsis"],
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": "",
+        "webviewInstallMode": {
+          "type": "downloadBootstrapper",
+          "silent": true
+        },
+       "nsis": {
+        "displayLanguageSelector": true,
+        "installerIcon": "icons/favicon.ico",
+        "languages": ["SimpChinese", "English"],
+        "installMode": "perMachine",
+        "template": "packages/windows/installer.nsi"
+      }
+    }
   }
 }
