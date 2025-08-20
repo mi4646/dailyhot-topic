@@ -13,12 +13,6 @@ export const originalSources = [
     items: [],
   },
   {
-    name: 'hellogithub',
-    source: 'HelloGitHub',
-    icon: 'fab fa-github text-gray-800',
-    items: [],
-  },
-  {
     name: 'baidu',
     source: '百度热搜',
     icon: 'fas fa-search text-blue-500',
@@ -36,7 +30,24 @@ export const originalSources = [
     icon: 'fab fa-weibo text-red-500',
     items: [],
   },
-
+  {
+    name:"github",
+    source: "GitHub",
+    icon: "fab fa-github text-gray-800",
+    items: [],
+  },
+  {
+    name: 'v2ex',
+    source: 'V2EX',
+    icon: 'fab fa-vuejs text-green-500',
+    items: [],
+  },
+    {
+    name: 'hellogithub',
+    source: 'HelloGitHub',
+    icon: 'fab fa-github text-gray-800',
+    items: [],
+  },
   {
     name: 'thepaper',
     source: '澎湃新闻',

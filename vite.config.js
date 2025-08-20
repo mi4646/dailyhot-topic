@@ -23,6 +23,19 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/zhihu/, ''),
         secure: false, // 如果目标 API 使用 HTTPS，且有无效证书可设置为 false
       },
+      // https://www.v2ex.com/api/topics/hot.json
+      '/v2ex': {
+        target: 'https://www.v2ex.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/v2ex/, ''),
+        secure: false,
+      },
+      '/github': {
+        target: 'https://trend.doforce.dpdns.org/repo',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/github/, ''),
+        secure: false,
+      },
     },
     build: {
       outDir: 'dist', // 与 Tauri 初始化时设置的一致

@@ -122,79 +122,62 @@ function App() {
     }))
   }
 
-  const fetchDataForSource = async (name) => {
-    // 开发环境 URL
-    let url = `/api-hot/${name}?cache=true`
-    if (name === 'zhihu') {
-      url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`
-    }
-
-    console.log(isTauri(), 'isTauri')
-    if (isTauri()) {
-      try {
-        console.log('Running in Tauri environment')
-
-        const { invoke } = await import('@tauri-apps/api/core')
-        console.log('Invoking Tauri command to fetch hot data for:', name)
-
-        const raw = await invoke('fetch_hot_data', { name })
-        console.log('Raw data from Tauri:', raw)
-        const responseData = JSON.parse(raw)
-
-        if (name === 'zhihu') {
-          return responseData.data.map((item) => ({
-            title: item.target.title,
-            summary: item.target.excerpt,
-            hot: item.detail_text,
-            url: `https://www.zhihu.com/question/${item.card_id.replace(
-              /^Q_/,
-              ''
-            )}`,
-          }))
-        }
-
-        return responseData.data || []
-      } catch (err) {
-        console.error('Error invoking fetch_hot_data from Tauri:', err)
-        return []
-      }
-    } else {
-      const response = await axios.get(url)
-      if (name === 'zhihu') {
-        return response.data.data.map((item) => ({
-          title: item.target.title,
-          summary: item.target.excerpt,
-          hot: item.detail_text,
-          url: `https://www.zhihu.com/question/${item.card_id.replace(
-            /^Q_/,
-            ''
-          )}`,
-        }))
-      }
-      return response.data.data || []
-    }
+  const parsers = {
+    zhihu: (data) =>
+      data.data.map((item) => ({
+        title: item.target.title,
+        summary: item.target.excerpt,
+        hot: item.detail_text,
+        url: `https://www.zhihu.com/question/${item.card_id.replace(/^Q_/, '')}`,
+      })),
+    v2ex: (data) =>
+      data.map((item) => ({
+        title: item.title,
+        summary: item.content,
+        hot: item.reply_count,
+        url: `https://www.v2ex.com/t/${item.id}`,
+      })),
+    github: (data) =>
+      data.map((item) => ({
+        title: item.repo,
+        summary: item.desc,
+        hot: item.stars,
+        url: `https://github.com/${item.repo}`,
+      })),
+    default: (data) => data.data || [],
   }
 
-  // const fetchDataForSource = async (name) => {
-  //   let url = `/api-hot/${name}?cache=true`;
-  //   if (name === "zhihu") {
-  //     url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`;
-  //   }
+  // 不同环境下的请求逻辑
+  async function fetchFromTauri(name) {
+    const { invoke } = await import('@tauri-apps/api/core')
+    const raw = await invoke('fetch_hot_data', { name })
+    return JSON.parse(raw)
+  }
 
-  //   const response = await axios.get(url);
-  //   if (name === "zhihu") {
-  //     return response.data.data.map((item) => ({
-  //       title: item.target.title,
-  //       summary: item.target.excerpt,
-  //       hot: item.detail_text,
-  //       url: `https://www.zhihu.com/question/${item.card_id.replace(
-  //         /^Q_/,
-  //         ""
-  //       )}`,
-  //     }));
-  //   }
-  //   return response.data.data || [];
-  // };
+  async function fetchFromWeb(name) {
+    let url = `/api-hot/${name}?cache=true`
+    if (name === 'zhihu')
+      url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`
+    else if (name === 'v2ex') url = `/v2ex/api/topics/hot.json`
+    else if (name === 'github') url = `/github`
+    const response = await axios.get(url)
+    return response.data
+  }
+
+  // 主函数
+  const fetchDataForSource = async (name) => {
+    try {
+      const rawData = isTauri()
+        ? await fetchFromTauri(name)
+        : await fetchFromWeb(name)
+
+      const parser = parsers[name] || parsers.default
+      return parser(rawData)
+    } catch (err) {
+      console.error(`Error fetching hot data for ${name}:`, err)
+      return []
+    }
+  }
 
   const loadSingleHotData = async (sourceName) => {
     const source = hotData.find((s) => s.source === sourceName)
