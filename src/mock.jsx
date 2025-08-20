@@ -3,7 +3,7 @@ export const originalSources = [
   {
     name: 'douyin',
     source: '抖音热点',
-    icon: 'fas fa-video text-pink-500',
+    icon: 'fab fa-tiktok text-pink-500',
     items: [],
   },
   {
@@ -31,9 +31,15 @@ export const originalSources = [
     items: [],
   },
   {
-    name:"github",
-    source: "GitHub",
-    icon: "fab fa-github text-gray-800",
+    name: 'github',
+    source: 'GitHub',
+    icon: 'fab fa-github text-gray-800',
+    items: [],
+  },
+  {
+    name: 'toutiao',
+    source: '今日头条',
+    icon: 'fas fa-newspaper text-red-500',
     items: [],
   },
   {
@@ -42,7 +48,7 @@ export const originalSources = [
     icon: 'fab fa-vuejs text-green-500',
     items: [],
   },
-    {
+  {
     name: 'hellogithub',
     source: 'HelloGitHub',
     icon: 'fab fa-github text-gray-800',
@@ -57,19 +63,13 @@ export const originalSources = [
   {
     name: 'qq-news',
     source: '腾讯新闻',
-    icon: 'fas fa-newspaper text-blue-700',
+    icon: 'fab fa-qq text-blue-700',
     items: [],
   },
   {
     name: 'netease-news',
     source: '网易新闻',
     icon: 'fas fa-newspaper text-red-400',
-    items: [],
-  },
-  {
-    name: 'toutiao',
-    source: '今日头条',
-    icon: 'fas fa-font text-indigo-500',
     items: [],
   },
   {
@@ -127,7 +127,7 @@ export const originalSources = [
   {
     name: 'weread',
     source: '微信读书',
-    icon: 'fas fa-book-open text-blue-800',
+    icon: 'fab fa-weixin text-green-800',
     items: [],
   },
   {
