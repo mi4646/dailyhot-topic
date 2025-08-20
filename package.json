@@ -12,7 +12,6 @@
     "tauri:info": "tauri info",
     "tauri:clean": "tauri clean",
     "tauri:build": "tauri build",
-    "build:nins": "tauri build",
     "build:win": "tauri build --target x86_64-pc-windows-msvc",
     "build:win:x64": "tauri build --target x86_64-pc-windows-msvc",
     "build:win:x86": "tauri build --target i686-pc-windows-msvc",

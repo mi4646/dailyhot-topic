@@ -11,11 +11,16 @@ use tauri::command;
 async fn fetch_hot_data(name: String) -> Result<String, String> {
     let url = if name == "zhihu" {
         "https://api.zhihu.com/topstory/hot-lists/total?limit=10&reverse_order=0".to_string()
-    } else {
+    } else if name== "v2ex"{
+        "https://www.v2ex.com/api/topics/hot.json".to_string()
+    } else if name == "github" {
+        "https://trend.doforce.dpdns.org/repo".to_string()
+    } 
+    else {
         format!("https://api-hot.imsyy.top/{}?cache=true", name)
     };
 
-    let response = reqwest::get(&url).await.map_err(|e| e.to_string())?;
+    let response: reqwest::Response = reqwest::get(&url).await.map_err(|e| e.to_string())?;
     let text: String = response.text().await.map_err(|e| e.to_string())?;
     Ok(text)
 }

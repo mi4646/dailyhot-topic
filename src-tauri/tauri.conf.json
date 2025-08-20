@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "HotTopicApp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "identifier": "com.hotrank.hotrankapp",
   "build": {
     "frontendDist": "../dist",
@@ -19,7 +19,7 @@
         "resizable": true,
         "fullscreen": false,
         "maximized": false,
-        "visible": false,
+        "visible": true,
         "decorations": true
       }
     ],
