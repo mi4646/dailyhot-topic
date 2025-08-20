@@ -6,7 +6,7 @@
 
 ## ✨ 功能特色
 
-- 🚀 支持多个平台的热榜数据（如：知乎、微博、抖音等）
+- 🚀 支持多个平台的热榜数据
 - 🎨 深色 / 浅色主题切换
 - 🔍 平台可见性设置、顺序自定义
 - 🔗 设置链接是否新标签页打开
@@ -17,6 +17,36 @@
 - 🖥️ 原生桌面支持：集成 Tauri 打包为 Windows/macOS/Linux 应用
 
 ---
+
+## 🔥 热榜聚合平台支持
+| 平台名称 | 数据来源 |
+|---------|--------|
+| douyin | 抖音热点 |
+| zhihu | 知乎热榜 |
+| baidu | 百度热搜 |
+| juejin | 稀土掘金 |
+| weibo | 微博热搜 |
+| github | GitHub |
+| toutiao | 今日头条 |
+| v2ex | V2EX |
+| hellogithub | HelloGitHub |
+| thepaper | 澎湃新闻 |
+| qq-news | 腾讯新闻 |
+| netease-news | 网易新闻 |
+| 36kr | 36氪 |
+| sspai | 少数派 |
+| ithome | IT之家 |
+| tieba | 百度贴吧 |
+| douban-movie | 豆瓣电影 |
+| genshin | 原神 |
+| starrail | 崩坏：星穹铁道 |
+| lol | 英雄联盟 |
+| weread | 微信读书 |
+| zhihu-daily | 知乎日报 |
+| ngabbs | NGA |
+| jianshu | 简书 |
+---
+
 
 ## 🛠️ 技术栈
 
