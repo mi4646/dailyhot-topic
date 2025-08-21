@@ -311,7 +311,7 @@ function App() {
           />
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-xl font-semibold mb-4">榜单排序 & 可见性</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">榜单排序 & 可见性</h3>
             <div className="flex flex-wrap gap-4 overflow-x-auto pb-4 hide-scrollbar">
               {filteredSources.map((sourceData, idx) => (
                 <div
@@ -364,7 +364,7 @@ function App() {
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-xl font-semibold mb-4">链接打开方式</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">链接打开方式</h3>
             <div className="flex items-center justify-between">
               <span className="text-gray-700 dark:text-gray-300">
                 是否在新标签页中打开链接？

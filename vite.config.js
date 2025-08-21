@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173, // 与 Tauri 初始化时输入的 dev URL 一致
     // open: true, // 启动时自动打开浏览器
     host: '0.0.0.0', // 允许外部访问
-    // strictPort: true, // 如果端口被占用则退出
+    strictPort: true, // 如果端口被占用则退出
     // 设置代理
     proxy: {
       '/api-hot': {
