@@ -4,6 +4,7 @@ import HotTopicCard from './components/HotTopicCard'
 import HotTopicDetailPage from './components/HotTopicDetailPage'
 import NotificationToast from './components/NotificationToast'
 import LazyLoadWrapper from './components/LazyLoadWrapper'
+import NewsBroadcastPage from './components/NewsBroadcastPage'
 import axios from 'axios'
 import { originalSources as originalHotData } from './mock'
 import { isTauri } from './utils'
@@ -22,6 +23,7 @@ function App() {
   const [sourceSettings, setSourceSettings] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsPage, setIsSettingsPage] = useState(false)
+  const [isNewsPage, setIsNewsPage] = useState(false)
 
   useLayoutEffect(() => {
     const savedTheme = localStorage.getItem('theme') === 'dark'
@@ -68,6 +70,17 @@ function App() {
     setLoadingSources(initialLoading)
     setHotDataErrors(initialErrors)
     setIsSettingsPage(window.location.hash === '#/settings')
+
+    // 添加新闻页监听
+    const onHashChange = () => {
+      const hash = window.location.hash
+      setIsSettingsPage(hash === '#/settings')
+      setIsNewsPage(hash === '#/news')
+    }
+
+    onHashChange()
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
   const toggleTheme = () => {
@@ -311,7 +324,9 @@ function App() {
           />
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">榜单排序 & 可见性</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">
+              榜单排序 & 可见性
+            </h3>
             <div className="flex flex-wrap gap-4 overflow-x-auto pb-4 hide-scrollbar">
               {filteredSources.map((sourceData, idx) => (
                 <div
@@ -364,7 +379,9 @@ function App() {
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">链接打开方式</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">
+              链接打开方式
+            </h3>
             <div className="flex items-center justify-between">
               <span className="text-gray-700 dark:text-gray-300">
                 是否在新标签页中打开链接？
@@ -409,11 +426,16 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300 ${
-        darkMode ? 'dark' : ''
-      }`}
+      className={`min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300 ${darkMode ? 'dark' : ''}`}
     >
-      {currentDetailSourceName ? (
+      {isNewsPage ? (
+        <NewsBroadcastPage
+          goBack={() => {
+            window.location.hash = ''
+            setIsNewsPage(false)
+          }}
+        />
+      ) : currentDetailSourceName ? (
         <HotTopicDetailPage
           sourceName={currentDetailSourceName}
           hotData={hotData}
@@ -421,9 +443,9 @@ function App() {
           closePage={() => (window.location.hash = '')}
         />
       ) : isSettingsPage ? (
-        // 设置页
         renderSettingsPage()
       ) : (
+        // 主页
         <div className="container mx-auto p-4 sm:p-6 lg:p-8">
           <Header
             darkMode={darkMode}
@@ -432,7 +454,12 @@ function App() {
               window.location.hash = '#/settings'
               setIsSettingsPage(true)
             }}
+            openNews={() => {
+              window.location.hash = '#/news'
+              setIsNewsPage(true)
+            }}
           />
+          {/* 热榜卡片列表 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {hotData
               .filter(
