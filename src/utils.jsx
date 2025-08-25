@@ -12,3 +12,27 @@ export const formatHot = (value) => {
 export const isTauri = () => {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 }
+
+export const cleanYouTubeIframe = (dirtyHtml) => {
+  if (!dirtyHtml || typeof dirtyHtml !== 'string') return ''
+  // 使用 DOMParser 解析 HTML
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(dirtyHtml, 'text/html')
+  const iframe = doc.querySelector('iframe[src]')
+  if (!iframe) return '' // 没有 iframe，返回空
+  const src = iframe.getAttribute('src')
+  // 提取 YouTube 视频 ID（从 src 中）
+  const videoIdMatch = src?.match(/embed\/([a-zA-Z0-9_-]+)/)
+  const videoId = videoIdMatch ? videoIdMatch[1] : null
+  if (!videoId) return '' // 无效视频 ID
+  // 生成干净、响应式的 iframe HTML
+  return `
+    <iframe
+      src="https://www.youtube-nocookie.com/embed/${videoId}"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+      style="width:100%; height:100%; position:absolute; top:0; left:0;">
+    </iframe>
+  `.trim()
+}
