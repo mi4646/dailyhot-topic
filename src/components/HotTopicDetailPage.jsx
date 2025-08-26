@@ -151,7 +151,7 @@ const HotTopicDetailPage = ({
             {item.title}
           </a>
           <span className="ml-6 flex-shrink-0 text-base md:text-lg text-gray-700 dark:text-gray-300 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 px-4 py-2 rounded-full font-semibold border border-orange-200 dark:border-orange-800">
-            🔥 {item.hot || 0}
+            🔥 {item.hot || 'N/A'}
           </span>
         </div>
         <p className="ml-18 text-lg text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap min-h-12">
