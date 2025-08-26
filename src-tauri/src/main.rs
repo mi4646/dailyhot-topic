@@ -15,8 +15,9 @@ async fn fetch_hot_data(name: String) -> Result<String, String> {
         "https://www.v2ex.com/api/topics/hot.json".to_string()
     } else if name == "github" {
         "https://trend.doforce.dpdns.org/repo".to_string()
-    } 
-    else {
+    } else if name == "xinwenlianbo" {
+        "https://api.cntv.cn/NewVideo/getVideoListByColumn?id=TOPC1451528971114112&n=10&sort=desc&p=1&mode=0&serviceId=tvcctv".to_string()
+    } else {
         format!("https://api-hot.imsyy.top/{}?cache=true", name)
     };
 
