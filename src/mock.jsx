@@ -7,6 +7,12 @@ export const originalSources = [
     items: [],
   },
   {
+    name: 'xinwenlianbo',
+    source: '新闻联播',
+    icon: 'fas fa-newspaper text-red-600',
+    items: [],
+  },
+  {
     name: 'zhihu',
     source: '知乎热榜',
     icon: 'fab fa-zhihu text-blue-600',

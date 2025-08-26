@@ -55,7 +55,7 @@ const HotTopicDetailPage = ({
             🔥 {formatHot(item.hot)}
           </span>
         </div>
-        <p className="ml-12 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+        <p className="ml-12 text-gray-600 dark:text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
           {item.summary || item.desc || '暂无摘要'}
         </p>
       </div>

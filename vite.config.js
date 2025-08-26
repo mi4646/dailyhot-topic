@@ -36,6 +36,13 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/github/, ''),
         secure: false,
       },
+      // https://api.cntv.cn/NewVideo/getVideoListByColumn?id=TOPC1451528971114112&n=10&sort=desc&p=1&mode=0&serviceId=tvcctv
+      '/xinwenlianbo': {
+        target: 'https://api.cntv.cn',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/xinwenlianbo/, ''),
+        secure: false,
+      },
     },
     build: {
       outDir: 'dist', // 与 Tauri 初始化时设置的一致

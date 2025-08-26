@@ -144,6 +144,13 @@ function App() {
         hot: item.stars,
         url: `https://github.com/${item.repo}`,
       })),
+    xinwenlianbo: (data) =>
+      data.data.list.map((item) => ({
+        title: item.title,
+        summary: item.brief,
+        hot: item.hot,
+        url: item.url,
+      })),
     default: (data) => data.data || [],
   }
 
@@ -160,6 +167,7 @@ function App() {
       url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`
     else if (name === 'v2ex') url = `/v2ex/api/topics/hot.json`
     else if (name === 'github') url = `/github`
+    else if (name === 'xinwenlianbo') url = `/xinwenlianbo//NewVideo/getVideoListByColumn?id=TOPC1451528971114112&n=10&sort=desc&p=1&mode=0&serviceId=tvcctv`
     const response = await axios.get(url)
     return response.data
   }
@@ -172,6 +180,7 @@ function App() {
         : await fetchFromWeb(name)
 
       const parser = parsers[name] || parsers.default
+      // console.log(rawData, '111111111111111')
       return parser(rawData)
     } catch (err) {
       console.error(`Error fetching hot data for ${name}:`, err)
@@ -311,7 +320,9 @@ function App() {
           />
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">榜单排序 & 可见性</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">
+              榜单排序 & 可见性
+            </h3>
             <div className="flex flex-wrap gap-4 overflow-x-auto pb-4 hide-scrollbar">
               {filteredSources.map((sourceData, idx) => (
                 <div
@@ -364,7 +375,9 @@ function App() {
           </div>
 
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">链接打开方式</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white flex items-center">
+              链接打开方式
+            </h3>
             <div className="flex items-center justify-between">
               <span className="text-gray-700 dark:text-gray-300">
                 是否在新标签页中打开链接？
