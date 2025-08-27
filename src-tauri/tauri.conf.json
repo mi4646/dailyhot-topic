@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "HotTopicApp",
   "version": "1.1.2",
-  "identifier": "com.hotrank.hotrankapp",
+  "identifier": "com.example.hottopicapp",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "热榜聚合站",
+        "title": "HotTopicApp | 热榜聚合站",
         "width": 1350,
         "height": 630,
         "resizable": true,
