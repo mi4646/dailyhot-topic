@@ -43,6 +43,34 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/xinwenlianbo/, ''),
         secure: false,
       },
+      // https://m.douban.com/rexxar/api/v2/subject_collection/movie_real_time_hotest/items?type=movie&start=0&count=10&for_mobile=1
+      '/douban-movie': {
+        target: 'https://m.douban.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/douban-movie/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader(
+              'Referer',
+              'https://m.douban.com/subject_collection/movie_real_time_hotest'
+            )
+            proxyReq.setHeader('User-Agent', 'Mozilla/5.0')
+          })
+        },
+        secure: false,
+      },
+      // Vite代理配置豆瓣源封面图片，避免CORS/403问题
+      '/img-proxy': {
+        target: 'https://img9.doubanio.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/img-proxy/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader('Referer', 'https://m.douban.com/')
+            proxyReq.setHeader('User-Agent', 'Mozilla/5.0')
+          })
+        },
+      },
     },
     build: {
       outDir: 'dist', // 与 Tauri 初始化时设置的一致

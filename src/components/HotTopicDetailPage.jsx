@@ -1,3 +1,5 @@
+// 热点详情页
+
 import React, { useState, useEffect } from 'react'
 
 const HotTopicDetailPage = ({
@@ -92,11 +94,158 @@ const HotTopicDetailPage = ({
     )
   }
 
-  const ITEMS_PER_PAGE = 8
+  const ITEMS_PER_PAGE = source.source === '豆瓣电影' ? 10 : 8
   const items = source.items || []
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE)
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
   const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, items.length)
+
+  // 豆瓣源的特殊渲染
+  const renderDoubanItem = (item, index) => {
+    const displayIndex = startIndex + index + 1
+
+    return (
+      <div
+        key={index}
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 transform hover:-translate-y-1 overflow-hidden"
+      >
+        <div className="flex flex-col md:flex-row">
+          {/* 封面图片 */}
+          <div className="md:w-32 flex-shrink-0">
+            <img
+              src={
+                item.cover
+                  ? item.cover.replace(
+                      /^https?:\/\/img\d+\.doubanio\.com/,
+                      '/img-proxy'
+                    )
+                  : 'https://placehold.co/128x192/ddd/999?text=No+Cover'
+              }
+              alt={item.title}
+              className="w-full h-48 md:h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src =
+                  'https://placehold.co/128x192/ddd/999?text=No+Cover'
+              }}
+            />
+          </div>
+
+          {/* 内容区域 */}
+          <div className="p-6 flex-grow">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="flex-grow">
+                <div className="flex items-center mb-2">
+                  <span
+                    className={`text-2xl font-extrabold w-8 text-center mr-4 ${
+                      displayIndex <= 3
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-gray-400 dark:text-gray-500'
+                    }`}
+                  >
+                    {displayIndex}.
+                  </span>
+                  <a
+                    href={item.url}
+                    target={sourceSettings?.openInNewTab ? '_blank' : '_self'}
+                    rel="noopener noreferrer"
+                    className="text-xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 leading-tight"
+                  >
+                    {item.title}
+                  </a>
+                </div>
+
+                <div className="ml-12 space-y-2">
+                  {item.card_subtitle && (
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                      {item.card_subtitle}
+                    </p>
+                  )}
+
+                  {item.rating && (
+                    <div className="flex items-center">
+                      <span className="text-yellow-500 mr-2">⭐</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">
+                        {item.rating.value} / 10
+                      </span>
+                      {item.score && (
+                        <span className="ml-4 text-gray-500 dark:text-gray-400 text-sm">
+                          热度: {item.score}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {item.year && (
+                    <span className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs px-2 py-1 rounded">
+                      {item.year}年
+                    </span>
+                  )}
+
+                  {item.type_name && (
+                    <span className="inline-block bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded ml-2">
+                      {item.type_name}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {item.score && (
+                <div className="flex-shrink-0">
+                  <span className="text-lg text-gray-700 dark:text-gray-300 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 px-3 py-1 rounded-full font-semibold border border-orange-200 dark:border-orange-800">
+                    🔥 {item.score}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {item.summary && (
+              <p className="mt-4 text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                {item.summary}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // 默认渲染
+  const renderDefaultItem = (item, index) => {
+    const displayIndex = startIndex + index + 1
+
+    return (
+      <div
+        key={index}
+        className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 transform hover:-translate-y-1"
+      >
+        <div className="flex items-center mb-4">
+          <span
+            className={`text-3xl font-extrabold w-12 text-center mr-6 ${
+              displayIndex <= 3
+                ? 'text-red-600 dark:text-red-400'
+                : 'text-gray-400 dark:text-gray-500'
+            }`}
+          >
+            {displayIndex}.
+          </span>
+          <a
+            href={item.url}
+            target={sourceSettings?.openInNewTab ? '_blank' : '_self'}
+            rel="noopener noreferrer"
+            className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 flex-grow transition-colors duration-200 leading-tight"
+          >
+            {item.title}
+          </a>
+          <span className="ml-6 flex-shrink-0 text-base md:text-lg text-gray-700 dark:text-gray-300 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 px-4 py-2 rounded-full font-semibold border border-orange-200 dark:border-orange-800">
+            🔥 {item.hot || 'N/A'}
+          </span>
+        </div>
+        <p className="ml-18 text-lg text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap min-h-12">
+          {item.summary || item.desc || '暂无摘要信息'}
+        </p>
+      </div>
+    )
+  }
 
   const renderItems = () => {
     if (!items.length) {
@@ -127,38 +276,14 @@ const HotTopicDetailPage = ({
       )
     }
 
-    return items.slice(startIndex, endIndex).map((item, idx) => (
-      <div
-        key={idx}
-        className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700 transform hover:-translate-y-1"
-      >
-        <div className="flex items-center mb-4">
-          <span
-            className={`text-3xl font-extrabold w-12 text-center mr-6 ${
-              startIndex + idx < 3
-                ? 'text-red-600 dark:text-red-400'
-                : 'text-gray-400 dark:text-gray-500'
-            }`}
-          >
-            {startIndex + idx + 1}.
-          </span>
-          <a
-            href={item.url}
-            target={sourceSettings?.openInNewTab ? '_blank' : '_self'}
-            rel="noopener noreferrer"
-            className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 flex-grow transition-colors duration-200 leading-tight"
-          >
-            {item.title}
-          </a>
-          <span className="ml-6 flex-shrink-0 text-base md:text-lg text-gray-700 dark:text-gray-300 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 px-4 py-2 rounded-full font-semibold border border-orange-200 dark:border-orange-800">
-            🔥 {item.hot || 'N/A'}
-          </span>
-        </div>
-        <p className="ml-18 text-lg text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap min-h-12">
-          {item.summary || item.desc || '暂无摘要信息'}
-        </p>
-      </div>
-    ))
+    return items.slice(startIndex, endIndex).map((item, idx) => {
+      // 如果是豆瓣电影源，使用特殊渲染
+      if (source.source === '豆瓣电影') {
+        return renderDoubanItem(item, idx)
+      }
+      // 否则使用默认渲染
+      return renderDefaultItem(item, idx)
+    })
   }
 
   return (

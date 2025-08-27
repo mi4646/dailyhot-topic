@@ -151,6 +151,18 @@ function App() {
         hot: item.hot,
         url: item.url,
       })),
+    'douban-movie': (data) =>
+      data.subject_collection_items.map((item) => ({
+        url: item.url,
+        hot: item.score,
+        year: item.year,
+        title: item.title,
+        cover: item.cover.url,
+        rating: item.rating,
+        summary: item.summary,
+        type_name: item.type_name,
+        card_subtitle: item.card_subtitle,
+      })),
     default: (data) => data.data || [],
   }
 
@@ -167,7 +179,10 @@ function App() {
       url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`
     else if (name === 'v2ex') url = `/v2ex/api/topics/hot.json`
     else if (name === 'github') url = `/github`
-    else if (name === 'xinwenlianbo') url = `/xinwenlianbo//NewVideo/getVideoListByColumn?id=TOPC1451528971114112&n=10&sort=desc&p=1&mode=0&serviceId=tvcctv`
+    else if (name === 'xinwenlianbo')
+      url = `/xinwenlianbo//NewVideo/getVideoListByColumn?id=TOPC1451528971114112&n=10&sort=desc&p=1&mode=0&serviceId=tvcctv`
+    else if (name === 'douban-movie')
+      url = `/douban-movie/rexxar/api/v2/subject_collection/movie_real_time_hotest/items?type=movie&start=0&count=10&for_mobile=1`
     const response = await axios.get(url)
     return response.data
   }

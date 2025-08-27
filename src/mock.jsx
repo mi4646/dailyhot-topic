@@ -43,6 +43,12 @@ export const originalSources = [
     items: [],
   },
   {
+    name: 'douban-movie',
+    source: '豆瓣电影',
+    icon: 'fas fa-film text-brown-500',
+    items: [],
+  },
+  {
     name: 'toutiao',
     source: '今日头条',
     icon: 'fas fa-newspaper text-red-500',
@@ -102,13 +108,6 @@ export const originalSources = [
     name: 'tieba',
     source: '百度贴吧',
     icon: 'fas fa-comments text-yellow-500',
-    items: [],
-  },
-
-  {
-    name: 'douban-movie',
-    source: '豆瓣电影',
-    icon: 'fas fa-film text-brown-500',
     items: [],
   },
   {
