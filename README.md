@@ -14,7 +14,7 @@
 - 📱 响应式设计，适配桌面与移动端
 - 📄 详情页支持分页浏览，更清晰的热点摘要
 - 📦 本地缓存设置，自动恢复用户配置
-- 🖥️ 原生桌面支持：集成 Tauri 打包为 Windows/macOS/Linux 应用
+- 🖥️ 原生桌面支持：集成 Tauri 打包为 Windows/macOS/Linux 应用（目前仅支持Windows）
 
 ---
 
@@ -78,6 +78,9 @@ npm run build
 
 # 本地预览构建结果
 npm run preview
+
+# 本地tauri开发
+npm run tauri
 ```
 
 ---
@@ -101,13 +104,10 @@ npx tauri init
 npm run tauri build
 
 # 或构建开发版（Debug）
-npm run tauri dev
+npm run tauri
 
 # 打包 Windows 桌面应用（生成.exe）
 npm run build:win
-
-# 打包 Android 应用（生成.apk）
-npm run build:android
 
 # 启动开发服务器（前端）
 npm run dev

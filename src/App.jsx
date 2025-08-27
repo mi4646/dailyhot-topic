@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react'
 import axios from 'axios'
-import { ChevronUp } from 'lucide-react'
+import { ChevronUp, WebcamIcon } from 'lucide-react'
 import Header from './components/Header'
 import HotTopicCard from './components/HotTopicCard'
 import LazyLoadWrapper from './components/LazyLoadWrapper'
@@ -125,6 +125,13 @@ function App() {
   }
 
   const parsers = {
+    weibo: (data) =>
+      data.data.map((item) => ({
+        title: item.title,
+        summary: item.summary,
+        hot: item.hot,
+        url: `https://m.weibo.cn/search?containerid=100103type%3D1%26q%3D${encodeURIComponent(item.title)}`,
+      })),
     zhihu: (data) =>
       data.data.map((item) => ({
         title: item.target.title,
