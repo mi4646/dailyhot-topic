@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react'
+import axios from 'axios'
+import { ChevronUp } from 'lucide-react'
 import Header from './components/Header'
 import HotTopicCard from './components/HotTopicCard'
-import HotTopicDetailPage from './components/HotTopicDetailPage'
-import NotificationToast from './components/NotificationToast'
 import LazyLoadWrapper from './components/LazyLoadWrapper'
-import axios from 'axios'
+import NotificationToast from './components/NotificationToast'
+import HotTopicDetailPage from './components/HotTopicDetailPage'
 import { originalSources as originalHotData } from './mock'
 import { isTauri } from './utils'
 
@@ -22,6 +23,7 @@ function App() {
   const [sourceSettings, setSourceSettings] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsPage, setIsSettingsPage] = useState(false)
+  const [showScrollTop, setShowScrollTop] = useState(false)
 
   useLayoutEffect(() => {
     const savedTheme = localStorage.getItem('theme') === 'dark'
@@ -299,6 +301,28 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
+  // 监听滚动事件，控制按钮显示/隐藏
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true)
+      } else {
+        setShowScrollTop(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // 滚动到顶部功能
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
   const renderSettingsPage = () => {
     const filteredSources = hotData
       .filter((source) =>
@@ -495,6 +519,17 @@ function App() {
         message={notification.message}
         isVisible={notification.show}
       />
+
+      {/* 一键到顶按钮 */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 w-12 h-12 bg-white border border-gray-200 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300 z-20"
+          aria-label="回到顶部"
+        >
+          <ChevronUp className="w-6 h-6 mx-auto text-gray-600" />
+        </button>
+      )}
     </div>
   )
 }
