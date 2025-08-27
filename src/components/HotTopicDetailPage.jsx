@@ -1,6 +1,6 @@
-// 热点详情页
-
 import React, { useState, useEffect } from 'react'
+import { DetailSkeleton } from './Skeleton'
+import { formatHot } from '../utils'
 
 const HotTopicDetailPage = ({
   sourceName,
@@ -10,6 +10,7 @@ const HotTopicDetailPage = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1)
   const [source, setSource] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   // 缓存键名
   const CACHE_KEY = 'hotTopicDetail'
@@ -18,13 +19,13 @@ const HotTopicDetailPage = ({
   // 从缓存获取数据
   const getCachedData = () => {
     try {
-      const cached = localStorage.getItem(CACHE_KEY)
+      const cached = sessionStorage.getItem(CACHE_KEY)
       if (!cached) return null
 
       const { data, timestamp } = JSON.parse(cached)
       // 检查缓存是否过期
       if (Date.now() - timestamp > CACHE_EXPIRY) {
-        localStorage.removeItem(CACHE_KEY)
+        sessionStorage.removeItem(CACHE_KEY)
         return null
       }
       return data
@@ -41,50 +42,78 @@ const HotTopicDetailPage = ({
         data,
         timestamp: Date.now(),
       }
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData))
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify(cacheData))
     } catch (error) {
       console.error('缓存保存失败:', error)
     }
   }
 
   useEffect(() => {
-    // 尝试从缓存获取数据
-    const cachedSource = getCachedData()
+    // 模拟加载延迟
+    const timer = setTimeout(() => {
+      // 尝试从缓存获取数据
+      const cachedSource = getCachedData()
 
-    if (cachedSource && (!hotData || !sourceName)) {
-      // 如果有缓存且没有传入新数据，使用缓存
-      setSource(cachedSource)
-      return
-    }
+      if (cachedSource && (!hotData || !sourceName)) {
+        // 如果有缓存且没有传入新数据，使用缓存
+        setSource(cachedSource)
+        setLoading(false)
+        return
+      }
 
-    // 查找新数据
-    const foundSource = hotData.find((s) => s.source === sourceName)
-    setSource(foundSource)
+      // 查找新数据
+      const foundSource = hotData.find((s) => s.source === sourceName)
+      setSource(foundSource)
 
-    if (foundSource.items && foundSource.items.length > 0) {
-      // 保存到缓存
-      setCachedData(foundSource)
-    } else if (cachedSource) {
-      // 如果新数据没找到但有缓存，使用缓存
-      setSource(cachedSource)
-    }
+      if (foundSource && foundSource.items && foundSource.items.length > 0) {
+        // 保存到缓存
+        setCachedData(foundSource)
+      } else if (cachedSource) {
+        // 如果新数据没找到但有缓存，使用缓存
+        setSource(cachedSource)
+      }
 
-    // 重置当前页码
-    setCurrentPage(1)
+      // 重置当前页码
+      setCurrentPage(1)
+      setLoading(false)
+    }, 800)
+
+    return () => clearTimeout(timer)
   }, [sourceName, hotData])
 
-  // 页面卸载时清理缓存
-  useEffect(() => {
-    return () => {
-      // 清理当前页面的缓存数据
-      try {
-        const cacheKey = `hotTopicDetail_${sourceName}`
-        localStorage.removeItem(cacheKey)
-      } catch (error) {
-        console.warn('清理缓存时发生错误:', error)
-      }
-    }
-  }, [sourceName])
+
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4 transition-colors duration-300">
+        <div className="max-w-6xl mx-auto">
+          {/* 返回按钮骨架屏 */}
+          <div className="mb-10 w-32 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+
+          {/* 标题骨架屏 */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-full mb-6 animate-pulse"></div>
+            <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto animate-pulse"></div>
+          </div>
+
+          {/* 内容骨架屏 */}
+          <div className="space-y-6 mb-12">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <DetailSkeleton key={index} />
+            ))}
+          </div>
+
+          {/* 分页骨架屏 */}
+          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8 mt-12">
+            <div className="w-32 h-12 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+            <div className="w-40 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+            <div className="w-32 h-12 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!source) {
     return (
@@ -192,7 +221,7 @@ const HotTopicDetailPage = ({
               {item.score && (
                 <div className="flex-shrink-0">
                   <span className="text-lg text-gray-700 dark:text-gray-300 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 px-3 py-1 rounded-full font-semibold border border-orange-200 dark:border-orange-800">
-                    🔥 {item.score}
+                    🔥 {formatHot(item.score)}
                   </span>
                 </div>
               )}
@@ -237,7 +266,7 @@ const HotTopicDetailPage = ({
             {item.title}
           </a>
           <span className="ml-6 flex-shrink-0 text-base md:text-lg text-gray-700 dark:text-gray-300 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 px-4 py-2 rounded-full font-semibold border border-orange-200 dark:border-orange-800">
-            🔥 {item.hot || 'N/A'}
+            🔥 {formatHot(item.hot) || 'N/A'}
           </span>
         </div>
         <p className="ml-18 text-lg text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap min-h-12">

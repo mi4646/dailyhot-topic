@@ -130,7 +130,7 @@ function App() {
         title: item.title,
         summary: item.summary,
         hot: item.hot,
-        url: `https://m.weibo.cn/search?containerid=100103type%3D1%26q%3D${encodeURIComponent(item.title)}`,
+        url: item.mobileUrl
       })),
     zhihu: (data) =>
       data.data.map((item) => ({

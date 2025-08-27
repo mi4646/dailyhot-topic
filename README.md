@@ -132,7 +132,7 @@ npm run tauri
 │   ├── assets/                       # 静态资源 (如图片、图标等)
 │   │   └── favicon.png
 │   ├── components/                   # 可复用的 React UI 组件
-│   │   ├── DetailSkeleton.jsx       # 详情页的骨架屏组件
+│   │   ├── Skeleton.jsx              # 骨架屏组件
 │   │   ├── ErrorPage.jsx            # 错误页面组件
 │   │   ├── Header.jsx               # 网站或应用的头部导航组件
 │   │   ├── HotTopicCard.jsx         # 热门话题卡片组件

@@ -1,5 +1,5 @@
 import { ErrorCard } from './ErrorPage'
-import DetailSkeleton from './DetailSkeleton'
+import { CardSkeleton } from './Skeleton'
 import { formatHot } from '../utils'
 
 const HotTopicCard = ({
@@ -10,10 +10,6 @@ const HotTopicCard = ({
   handleRetry,
 }) => {
   const { source, icon, items } = sourceData
-
-  const handleClick = () => {
-    openModal(source)
-  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col h-full min-h-[500px] transform transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
@@ -51,7 +47,7 @@ const HotTopicCard = ({
       >
         {loading ? (
           // 显示骨架屏
-          <DetailSkeleton />
+          <CardSkeleton />
         ) : error ? (
           // 显示错误提示
           <div className="flex items-center justify-center h-full">
