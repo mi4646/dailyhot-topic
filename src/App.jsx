@@ -205,7 +205,6 @@ function App() {
         : await fetchFromWeb(name)
 
       const parser = parsers[name] || parsers.default
-      // console.log(rawData, '111111111111111')
       return parser(rawData)
     } catch (err) {
       console.error(`Error fetching hot data for ${name}:`, err)
@@ -215,7 +214,7 @@ function App() {
 
   const loadSingleHotData = async (sourceName) => {
     const source = hotData.find((s) => s.source === sourceName)
-    if (!source || loadedSources[sourceName]) return
+    if (!source) return
 
     const isVisible = sourceSettings[sourceName]?.visible ?? true
     if (!isVisible) return
