@@ -375,7 +375,10 @@ const HotTopicDetailPage = ({
         {items.length > 0 && totalPages > 1 && (
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-8 mt-12">
             <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              onClick={() => {
+                setCurrentPage((p) => Math.max(1, p - 1))
+                window.scrollTo(0, 0)
+              }}
               disabled={currentPage === 1}
               className="flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-lg font-semibold rounded-full shadow-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none hover:transform hover:scale-105"
             >
@@ -402,7 +405,10 @@ const HotTopicDetailPage = ({
               / {totalPages} 页
             </span>
             <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              onClick={() => {
+                setCurrentPage((p) => Math.min(totalPages, p + 1))
+                window.scrollTo(0, 0)
+              }}
               disabled={currentPage === totalPages}
               className="flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-lg font-semibold rounded-full shadow-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none hover:transform hover:scale-105"
             >
