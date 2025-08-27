@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react'
 import axios from 'axios'
-import { ChevronUp, WebcamIcon } from 'lucide-react'
+import { ChevronUp, Settings, Home } from 'lucide-react'
 import Header from './components/Header'
 import HotTopicCard from './components/HotTopicCard'
 import LazyLoadWrapper from './components/LazyLoadWrapper'
@@ -24,6 +24,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsPage, setIsSettingsPage] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
+  const [scrollPosition, setScrollPosition] = useState(0) // 用于记录滚动位置
 
   useLayoutEffect(() => {
     const savedTheme = localStorage.getItem('theme') === 'dark'
@@ -130,7 +131,7 @@ function App() {
         title: item.title,
         summary: item.summary,
         hot: item.hot,
-        url: item.mobileUrl
+        url: item.mobileUrl,
       })),
     zhihu: (data) =>
       data.data.map((item) => ({
@@ -257,7 +258,19 @@ function App() {
   }
 
   const openDetailPage = (sourceName) => {
+    // 进入详情页前记录当前位置
+    setScrollPosition(window.scrollY)
     window.location.hash = `#/detail/${sourceName}`
+    // 进入详情页时滚动到顶部
+    window.scrollTo(0, 0)
+  }
+
+  const closeDetailPage = () => {
+    window.location.hash = ''
+    // 恢复滚动位置
+    setTimeout(() => {
+      window.scrollTo(0, scrollPosition)
+    }, 0)
   }
 
   useEffect(() => {
@@ -297,16 +310,22 @@ function App() {
         const sourceName = decodeURIComponent(hash.replace('#/detail/', ''))
         setIsSettingsPage(false)
         setCurrentDetailSourceName(sourceName)
+        // 进入详情页时滚动到顶部
+        window.scrollTo(0, 0)
       } else {
         setIsSettingsPage(false)
         setCurrentDetailSourceName(null)
+        // 返回首页时恢复滚动位置
+        setTimeout(() => {
+          window.scrollTo(0, scrollPosition)
+        }, 0)
       }
     }
 
     handleHashChange() // 初始化触发一次
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
-  }, [])
+  }, [scrollPosition])
 
   // 监听滚动事件，控制按钮显示/隐藏
   useEffect(() => {
@@ -350,11 +369,11 @@ function App() {
             }}
             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 flex items-center mb-6"
           >
-            <i className="fas fa-arrow-left mr-2"></i>返回主页
+            <Home className="mr-2" size={16} /> 返回主页
           </button>
 
           <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
-            <i className="fas fa-cog mr-3 text-4xl text-blue-500"></i>设置中心
+            <Settings className="mr-3 text-blue-500" size={32} /> 设置中心
           </h2>
 
           <input
@@ -477,7 +496,7 @@ function App() {
           sourceName={currentDetailSourceName}
           hotData={hotData}
           sourceSettings={sourceSettings}
-          closePage={() => (window.location.hash = '')}
+          closePage={closeDetailPage}
         />
       ) : isSettingsPage ? (
         // 设置页

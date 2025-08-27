@@ -81,8 +81,6 @@ const HotTopicDetailPage = ({
     return () => clearTimeout(timer)
   }, [sourceName, hotData])
 
-
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4 transition-colors duration-300">
@@ -318,29 +316,31 @@ const HotTopicDetailPage = ({
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
-        {/* 返回按钮 */}
-        <button
-          onClick={closePage}
-          className="mb-10 flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-lg font-medium transition-colors duration-200 group"
-        >
-          <svg
-            className="w-5 h-5 mr-3 group-hover:-translate-x-1 transition-transform duration-200"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        {/* 固定在顶部的返回按钮 */}
+        <div className="fixed top-4 left-4 z-50">
+          <button
+            onClick={closePage}
+            className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          返回首页
-        </button>
+            <svg
+              className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            返回首页
+          </button>
+        </div>
 
         {/* 标题 */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 pt-16">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 rounded-full text-white text-4xl mb-6 shadow-lg">
             {source.icon ? (
               <i className={source.icon}></i>
@@ -389,7 +389,7 @@ const HotTopicDetailPage = ({
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
+                  d="M15 19l-7-7m0 0l7-7m-7 7h18"
                 />
               </svg>
               上一页
