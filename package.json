@@ -6,12 +6,11 @@
   "scripts": {
     "dev": "vite",
     "tauri": "tauri dev",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "prepare": "husky install",
     "tauri:info": "tauri info",
     "tauri:clean": "tauri clean",
-    "tauri:build": "tauri build",
     "build:win": "tauri build --target x86_64-pc-windows-msvc",
     "lint": "eslint . --ext .js,.ts,.tsx,.vue,.jsx,.svelte",
     "format": "prettier --write .",
