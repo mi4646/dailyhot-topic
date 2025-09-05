@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { DetailSkeleton } from './Skeleton'
 import { formatHot } from '../utils'
+import ProxyImage from './ProxyImage'
 
 const HotTopicDetailPage = ({
   sourceName,
@@ -139,21 +140,10 @@ const HotTopicDetailPage = ({
         <div className="flex flex-col md:flex-row">
           {/* 封面图片 */}
           <div className="md:w-32 flex-shrink-0">
-            <img
-              src={
-                item.cover
-                  ? item.cover.replace(
-                      /^https?:\/\/img\d+\.doubanio\.com/,
-                      '/img-proxy'
-                    )
-                  : 'https://placehold.co/128x192/ddd/999?text=No+Cover'
-              }
+            <ProxyImage
+              url={item.cover}
               alt={item.title}
               className="w-full h-48 md:h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src =
-                  'https://placehold.co/128x192/ddd/999?text=No+Cover'
-              }}
             />
           </div>
 

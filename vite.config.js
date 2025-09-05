@@ -54,20 +54,18 @@ export default defineConfig({
               'Referer',
               'https://m.douban.com/subject_collection/movie_real_time_hotest'
             )
-            proxyReq.setHeader('User-Agent', 'Mozilla/5.0')
           })
         },
         secure: false,
       },
       // Vite代理配置豆瓣源封面图片，避免CORS/403问题
       '/img-proxy': {
-        target: 'https://img9.doubanio.com',
+        target: 'https://doubanio.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/img-proxy/, ''),
         configure: (proxy) => {
           proxy.on('proxyReq', (proxyReq) => {
             proxyReq.setHeader('Referer', 'https://m.douban.com/')
-            proxyReq.setHeader('User-Agent', 'Mozilla/5.0')
           })
         },
       },
