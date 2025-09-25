@@ -613,6 +613,24 @@ export const originalSources = [
     },
   },
   {
+    name: 'history',
+    source: '历史上的今天',
+    icon: 'fas fa-history text-yellow-800',
+    items: [],
+    apis: ['/60s-api/v2/today-in-history', '/news-hot-api/history?cache=true'],
+    parser: (data) => {
+      console.log('History Data:', data)
+      return (data?.data?.items || data?.data || []).map((item, index) => ({
+        id: item.id || item?.target?.id || index,
+        title: item.title,
+        url: item.source_url || item.link,
+        hot: item.hot || item.hot_value || '',
+        summary: item.desc || item.description || '',
+        time: item.timestamp || '',
+      }))
+    },
+  },
+  {
     name: 'jianshu',
     source: '简书',
     icon: 'fas fa-journal-whills text-orange-600',
