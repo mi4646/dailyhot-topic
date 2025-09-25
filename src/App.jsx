@@ -132,6 +132,17 @@ function App() {
 
   // 控制单个榜单的显示/隐藏
   const handleSourceVisibilityChange = (sourceName, isVisible) => {
+    // 获取当前所有可见的 sourceName 列表
+    const visibleSources = filteredSources.filter((s) => s.isVisible).length
+
+    // 如果只剩一个，且用户要隐藏它，则阻止操作
+    if (visibleSources === 1 && !isVisible) {
+      // 显示提示或不执行操作
+      showNotification('至少需要保留一个平台可见！')
+      return // 阻止隐藏
+    }
+
+    // 否则正常更新
     setSourceSettings((prev) => ({
       ...prev,
       [sourceName]: {
