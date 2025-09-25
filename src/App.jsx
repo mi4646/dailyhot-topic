@@ -235,9 +235,8 @@ function App() {
         })
       },
 
-      // 5 * 60 * 1000
-      5 * 1000
-    ) // 每5分钟刷新一次
+      10 * 60 * 1000
+    ) // 每10分钟刷新一次
 
     return () => clearInterval(interval)
   }, [loadedSources, autoRefresh]) // 依赖 autoRefresh
@@ -390,6 +389,7 @@ function App() {
         </div>
       )}
 
+      {/* 错误提示 */}
       <NotificationToast
         message={notification.message}
         isVisible={notification.show}
