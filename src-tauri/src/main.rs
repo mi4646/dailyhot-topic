@@ -18,7 +18,8 @@ async fn fetch_hot_data(name: String) -> Result<String, String> {
     } else if name == "douban-movie" {
         "https://m.douban.com/rexxar/api/v2/subject_collection/movie_real_time_hotest/items?type=movie&start=0&count=10&for_mobile=1".to_string()
     } else {
-        format!("https://api-hot.imsyy.top/{}?cache=true", name)
+        // format!("https://api-hot.imsyy.top/{}?cache=true", name)
+         format!("https://daily-hot-api-zeta-six.vercel.app/{}?cache=true", name)
     };
 
     let client = reqwest::Client::new();

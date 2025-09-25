@@ -7,17 +7,26 @@ export default defineConfig({
     port: 5173, // 与 Tauri 初始化时输入的 dev URL 一致
     // open: true, // 启动时自动打开浏览器
     host: '0.0.0.0', // 允许外部访问
-    strictPort: true, // 如果端口被占用则退出
+    // strictPort: true, // 如果端口被占用则退出
     // 设置代理
     proxy: {
+      '/news-hot-api': {
+        target: 'https://news.zpa666.top/api/',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/news-hot-api/, ''),
+      },
+      '/60s-api': {
+        target: 'https://60s.viki.moe',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/60s-api/, ''),
+      },
       '/api-hot': {
         target: 'https://api-hot.imsyy.top',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api-hot/, ''),
       },
-      // 添加如下代理规则
+      // https://api.zhihu.com/topstory/hot-lists/total?limit=10&reverse_order=0
       '/zhihu': {
-        // https://api.zhihu.com/topstory/hot-lists/total?limit=10&reverse_order=0
         target: 'https://api.zhihu.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/zhihu/, ''),

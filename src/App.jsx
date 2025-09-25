@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react'
-import axios from 'axios'
 import { ChevronUp, Settings, Home } from 'lucide-react'
 import Header from './components/Header'
 import HotTopicCard from './components/HotTopicCard'
@@ -7,7 +6,7 @@ import LazyLoadWrapper from './components/LazyLoadWrapper'
 import NotificationToast from './components/NotificationToast'
 import HotTopicDetailPage from './components/HotTopicDetailPage'
 import { originalSources as originalHotData } from './mock'
-import { isTauri } from './utils'
+import { fetchDataForSource } from './api/fetcher'
 
 function App() {
   const [hotData, setHotData] = useState([...originalHotData])
@@ -26,6 +25,7 @@ function App() {
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0) // 用于记录滚动位置
 
+  // 初始化时加载用户设置和主题
   useLayoutEffect(() => {
     const savedTheme = localStorage.getItem('theme') === 'dark'
     setDarkMode(savedTheme)
@@ -73,6 +73,7 @@ function App() {
     setIsSettingsPage(window.location.hash === '#/settings')
   }, [])
 
+  // 切换主题
   const toggleTheme = () => {
     const newDarkMode = !darkMode
     setDarkMode(newDarkMode)
@@ -80,11 +81,13 @@ function App() {
     document.documentElement.classList.toggle('dark', newDarkMode)
   }
 
+  // 显示通知
   const showNotification = (message) => {
     setNotification({ message, show: true })
     setTimeout(() => setNotification({ message: '', show: false }), 2000)
   }
 
+  // 保存设置
   const saveSettings = () => {
     const newSettings = {
       ...sourceSettings,
@@ -96,6 +99,7 @@ function App() {
     setIsSettingsPage(false)
   }
 
+  // 重置设置
   const resetSettings = () => {
     localStorage.removeItem('hotTopicSettings')
     const defaultSettings = {}
@@ -115,6 +119,7 @@ function App() {
     window.location.hash = ''
   }
 
+  // 控制单个榜单的显示/隐藏
   const handleSourceVisibilityChange = (sourceName, isVisible) => {
     setSourceSettings((prev) => ({
       ...prev,
@@ -125,93 +130,7 @@ function App() {
     }))
   }
 
-  const parsers = {
-    weibo: (data) =>
-      data.data.map((item) => ({
-        title: item.title,
-        summary: item.summary,
-        hot: item.hot,
-        url: item.mobileUrl,
-      })),
-    zhihu: (data) =>
-      data.data.map((item) => ({
-        title: item.target.title,
-        summary: item.target.excerpt,
-        hot: item.detail_text,
-        url: `https://www.zhihu.com/question/${item.card_id.replace(/^Q_/, '')}`,
-      })),
-    v2ex: (data) =>
-      data.map((item) => ({
-        title: item.title,
-        summary: item.content,
-        hot: item.reply_count,
-        url: `https://www.v2ex.com/t/${item.id}`,
-      })),
-    github: (data) =>
-      data.map((item) => ({
-        title: item.repo,
-        summary: item.desc,
-        hot: item.stars,
-        url: `https://github.com/${item.repo}`,
-      })),
-    xinwenlianbo: (data) =>
-      data.data.list.map((item) => ({
-        title: item.title,
-        summary: item.brief,
-        hot: item.hot,
-        url: item.url,
-      })),
-    'douban-movie': (data) =>
-      data.subject_collection_items.map((item) => ({
-        url: item.url,
-        hot: item.score,
-        year: item.year,
-        title: item.title,
-        cover: item.cover.url,
-        rating: item.rating,
-        summary: item.summary,
-        type_name: item.type_name,
-        card_subtitle: item.card_subtitle,
-      })),
-    default: (data) => data.data || [],
-  }
-
-  // 不同环境下的请求逻辑
-  async function fetchFromTauri(name) {
-    const { invoke } = await import('@tauri-apps/api/core')
-    const raw = await invoke('fetch_hot_data', { name })
-    return JSON.parse(raw)
-  }
-
-  async function fetchFromWeb(name) {
-    let url = `/api-hot/${name}?cache=true`
-    if (name === 'zhihu')
-      url = `/zhihu/topstory/hot-lists/total?limit=10&reverse_order=0`
-    else if (name === 'v2ex') url = `/v2ex/api/topics/hot.json`
-    else if (name === 'github') url = `/github`
-    else if (name === 'xinwenlianbo')
-      url = `/xinwenlianbo//NewVideo/getVideoListByColumn?id=TOPC1451528971114112&n=10&sort=desc&p=1&mode=0&serviceId=tvcctv`
-    else if (name === 'douban-movie')
-      url = `/douban-movie/rexxar/api/v2/subject_collection/movie_real_time_hotest/items?type=movie&start=0&count=10&for_mobile=1`
-    const response = await axios.get(url)
-    return response.data
-  }
-
-  // 主函数
-  const fetchDataForSource = async (name) => {
-    try {
-      const rawData = isTauri()
-        ? await fetchFromTauri(name)
-        : await fetchFromWeb(name)
-
-      const parser = parsers[name] || parsers.default
-      return parser(rawData)
-    } catch (err) {
-      console.error(`Error fetching hot data for ${name}:`, err)
-      return []
-    }
-  }
-
+  // 加载单个榜单数据
   const loadSingleHotData = async (sourceName) => {
     const source = hotData.find((s) => s.source === sourceName)
     if (!source) return
@@ -224,10 +143,11 @@ function App() {
 
     try {
       const data = await fetchDataForSource(source.name)
+
       if (!data || data.length === 0) {
         setHotDataErrors((prev) => ({
           ...prev,
-          [sourceName]: '暂无数据或加载失败',
+          [sourceName]: '暂无数据，请稍后重试',
         }))
       } else {
         setHotData((prev) =>
@@ -237,16 +157,22 @@ function App() {
         )
         setLoadedSources((prev) => ({ ...prev, [sourceName]: true }))
       }
-    } catch {
+    } catch (err) {
+      const errorMsg =
+        err.message.includes('timeout') || err.message.includes('network')
+          ? '网络连接异常，请检查后重试'
+          : `加载失败：${err.message}`
+
       setHotDataErrors((prev) => ({
         ...prev,
-        [sourceName]: '加载失败，请检查网络连接',
+        [sourceName]: errorMsg,
       }))
     } finally {
       setLoadingSources((prev) => ({ ...prev, [sourceName]: false }))
     }
   }
 
+  // 重试加载单个榜单
   const handleRetry = async (sourceName) => {
     setLoadedSources((prev) => {
       const copy = { ...prev }
@@ -256,6 +182,7 @@ function App() {
     await loadSingleHotData(sourceName)
   }
 
+  // 打开详情页
   const openDetailPage = (sourceName) => {
     // 进入详情页前记录当前位置
     setScrollPosition(window.scrollY)
@@ -264,6 +191,7 @@ function App() {
     window.scrollTo(0, 0)
   }
 
+  // 关闭详情页
   const closeDetailPage = () => {
     window.location.hash = ''
     // 恢复滚动位置
@@ -272,9 +200,11 @@ function App() {
     }, 0)
   }
 
+  // 定时刷新已加载的榜单数据（每5分钟）
   useEffect(() => {
     const interval = setInterval(
       () => {
+        console.log('⏰ 定时刷新已加载的榜单数据')
         Object.keys(loadedSources).forEach((source) => {
           loadSingleHotData(source)
         })
@@ -285,6 +215,7 @@ function App() {
     return () => clearInterval(interval)
   }, [loadedSources])
 
+  // 初始化时加载所有可见榜单数据
   useEffect(() => {
     const newOrder = hotData.map((item) => item.source)
     if (
@@ -298,6 +229,7 @@ function App() {
     }
   }, [])
 
+  // 初始加载
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash
@@ -348,6 +280,7 @@ function App() {
     })
   }
 
+  // 设置页渲染
   const renderSettingsPage = () => {
     const filteredSources = hotData
       .filter((source) =>
