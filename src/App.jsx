@@ -307,15 +307,11 @@ function App() {
     })
   }
 
-  // 计算 filteredSources
-  const filteredSources = hotData
-    .filter((source) =>
-      source.source.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .map((source) => ({
-      ...source,
-      isVisible: sourceSettings[source.source]?.visible ?? true,
-    }))
+  // 根据 sourceSettings 过滤出可见的榜单
+  const filteredSources = hotData.map((source) => ({
+    ...source,
+    isVisible: sourceSettings[source.source]?.visible ?? true,
+  }))
 
   return (
     <div
@@ -336,7 +332,6 @@ function App() {
           setSearchTerm={setSearchTerm}
           filteredSources={filteredSources}
           handleSourceVisibilityChange={handleSourceVisibilityChange}
-          sourceSettings={sourceSettings}
           openInNewTab={openInNewTab}
           setOpenInNewTab={setOpenInNewTab}
           autoRefresh={autoRefresh}
