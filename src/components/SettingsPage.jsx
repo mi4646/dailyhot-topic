@@ -1,5 +1,3 @@
-// src/components/SettingsPage.jsx
-import React from 'react'
 import { Home, Settings } from 'lucide-react'
 
 const SettingsPage = ({
@@ -15,7 +13,35 @@ const SettingsPage = ({
   resetSettings,
   saveSettings,
   goBack,
+  onOrderChange,
 }) => {
+  // 处理拖拽排序
+  const handleDragEnd = (e) => {
+    e.currentTarget.style.opacity = '1'
+  }
+
+  const handleDragStart = (e, idx) => {
+    e.currentTarget.style.opacity = '0.4'
+    e.dataTransfer.setData('draggedIndex', idx)
+  }
+
+  const handleDrop = (e, targetIdx) => {
+    e.preventDefault()
+    const draggedIndex = parseInt(e.dataTransfer.getData('draggedIndex'), 10)
+
+    // 创建新数组，避免直接修改原数组
+    const newList = [...filteredSources]
+    const draggedItem = newList[draggedIndex]
+    newList.splice(draggedIndex, 1)
+    newList.splice(targetIdx, 0, draggedItem)
+
+    // 更新顺序
+    if (onOrderChange) {
+      const newOrder = newList.map((item) => item.source)
+      onOrderChange(newOrder)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-6 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
@@ -48,25 +74,10 @@ const SettingsPage = ({
               <div
                 key={idx}
                 draggable
-                onDragStart={(e) => {
-                  e.currentTarget.style.opacity = '0.4'
-                  e.dataTransfer.setData('draggedIndex', idx)
-                }}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  const draggedIndex = parseInt(
-                    e.dataTransfer.getData('draggedIndex'),
-                    10
-                  )
-                  const newList = [...filteredSources]
-                  const draggedItem = newList[draggedIndex]
-                  newList.splice(draggedIndex, 1)
-                  newList.splice(idx, 0, draggedItem)
-                  // 注意：这里需要通知父组件更新顺序
-                  console.log('请实现拖拽排序回调')
-                }}
-                onDragEnd={(e) => (e.currentTarget.style.opacity = '1')}
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDrop={(e) => handleDrop(e, idx)}
                 onDragOver={(e) => e.preventDefault()}
+                onDragEnd={handleDragEnd}
                 className="draggable-item min-w-[180px] max-w-xs p-4 bg-gray-100 dark:bg-gray-700 rounded-lg cursor-move hover:shadow-md transition-all duration-200 transform hover:-translate-y-1"
               >
                 <div className="flex items-center justify-between mb-3 space-x-12">
@@ -125,7 +136,7 @@ const SettingsPage = ({
           </h3>
           <div className="flex items-center justify-between">
             <span className="text-gray-700 dark:text-gray-300">
-              是否开启自动刷新（每5分钟）？
+              是否开启自动刷新？
             </span>
             <label className="inline-flex items-center cursor-pointer">
               <input

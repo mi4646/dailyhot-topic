@@ -26,6 +26,7 @@ function App() {
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [scrollPosition, setScrollPosition] = useState(0) // 用于记录滚动位置
 
+  const [openInNewTab, setOpenInNewTab] = useState(true) // 默认在新标签页打开
   const [autoRefresh, setAutoRefresh] = useState(true) // 自动刷新设置
 
   // 初始化时加载用户设置和主题
@@ -101,7 +102,7 @@ function App() {
   const saveSettings = () => {
     const newSettings = {
       ...sourceSettings,
-      openInNewTab: sourceSettings.openInNewTab ?? true,
+      openInNewTab,
       autoRefresh,
     }
     localStorage.setItem('hotTopicSettings', JSON.stringify(newSettings))
@@ -336,10 +337,8 @@ function App() {
           filteredSources={filteredSources}
           handleSourceVisibilityChange={handleSourceVisibilityChange}
           sourceSettings={sourceSettings}
-          openInNewTab={sourceSettings.openInNewTab ?? true}
-          setOpenInNewTab={(value) =>
-            setSourceSettings((prev) => ({ ...prev, openInNewTab: value }))
-          }
+          openInNewTab={openInNewTab}
+          setOpenInNewTab={setOpenInNewTab}
           autoRefresh={autoRefresh}
           setAutoRefresh={setAutoRefresh}
           resetSettings={resetSettings}
@@ -347,6 +346,13 @@ function App() {
           goBack={() => {
             window.location.hash = ''
             setIsSettingsPage(false)
+          }}
+          onOrderChange={(newOrder) => {
+            // 根据新顺序重新排序 hotData
+            const orderedList = [...hotData].sort(
+              (a, b) => newOrder.indexOf(a.source) - newOrder.indexOf(b.source)
+            )
+            setHotData(orderedList)
           }}
         />
       ) : (
@@ -376,7 +382,7 @@ function App() {
                   <HotTopicCard
                     sourceData={{
                       ...sourceData,
-                      openInNewTab: sourceSettings.openInNewTab ?? true,
+                      openInNewTab: openInNewTab,
                     }}
                     openModal={openDetailPage}
                     error={hotDataErrors[sourceData.source]}
