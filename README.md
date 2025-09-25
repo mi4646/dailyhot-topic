@@ -19,25 +19,34 @@
 ---
 
 ## 🔥 热榜聚合平台支持
-| 平台名称 | 数据来源 |
-|---------|--------|
+| 平台名称 | 中文名称 |
+|--------|---------|
 | douyin | 抖音热点 |
+| weibo | 微博热搜 |
+| xinwenlianbo | 新闻联播 |
 | zhihu | 知乎热榜 |
+| rednote | 小红书 |
 | baidu | 百度热搜 |
 | juejin | 稀土掘金 |
-| weibo | 微博热搜 |
+| bilibili | 哔哩哔哩 |
 | github | GitHub |
 | toutiao | 今日头条 |
 | v2ex | V2EX |
+| douban-movie | 豆瓣电影 |
+| csdn | CSDN |
 | hellogithub | HelloGitHub |
 | thepaper | 澎湃新闻 |
+| sina-news | 新浪新闻 |
 | qq-news | 腾讯新闻 |
 | netease-news | 网易新闻 |
+| dongchedi | 懂车帝 |
 | 36kr | 36氪 |
+| 果壳 | Guokr |
+| coolapk | 酷安 |
+| smzdm | 什么值得买 |
 | sspai | 少数派 |
 | ithome | IT之家 |
 | tieba | 百度贴吧 |
-| douban-movie | 豆瓣电影 |
 | genshin | 原神 |
 | starrail | 崩坏：星穹铁道 |
 | lol | 英雄联盟 |
@@ -45,7 +54,6 @@
 | zhihu-daily | 知乎日报 |
 | ngabbs | NGA |
 | jianshu | 简书 |
-| xinwenlianbo | 新闻联播 |
 ---
 
 
