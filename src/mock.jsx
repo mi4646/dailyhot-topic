@@ -29,15 +29,53 @@ export const originalSources = [
       '/api-hot/weibo?cache=true',
       '/news-hot-api/weibo?cache=true',
       '/60s-api/v2/weibo',
+      '/weibo-hot-api/container/getIndex?containerid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&title=%E5%BE%AE%E5%8D%9A%E7%83%AD%E6%90%9C&extparam=filter_type%3Drealtimehot%26mi_cid%3D100103%26pos%3D0_0%26c_type%3D30%26display_time%3D1540538388&luicode=10000011&lfid=231583',
     ],
-    parser: (data) => {
-      return (data?.data || []).map((item, index) => ({
-        id: item.id || item?.target?.id || index,
-        title: item.title || item.desc,
-        url: item.target?.url || item.link,
-        hot: item.hot || item.hot_value || '',
-        time: item.createTime || item.create_time || item.active_time || '',
-      }))
+    parser: (rawData) => {
+      // ===== 情况1：微博官方 m.weibo.cn 结构 =====
+      // data.cards[0].card_group
+      if (Array.isArray(rawData?.data?.cards?.[0]?.card_group)) {
+        console.log('[Weibo] 使用官方 API 解析模式')
+        return rawData.data.cards[0].card_group.map((item, index) => ({
+          id: item.itemid || index,
+          title: item.desc || 'No Title',
+          url:
+            item.scheme ||
+            `https://s.weibo.com/weibo?q=${encodeURIComponent(item.desc)}`,
+          hot: item.hotword?.num || item.num || '',
+        }))
+      }
+
+      // ===== 情况2：DailyHot 风格结构 =====
+      if (Array.isArray(rawData)) {
+        console.log('[Weibo] 使用 DailyHot 兼容模式')
+        return rawData.map((item, index) => ({
+          id: item.id || item.mid || index,
+          title: item.word || item.title || 'No Title',
+          url:
+            item.url ||
+            `https://s.weibo.com/weibo?q=${encodeURIComponent(item.word || item.title)}`,
+          hot: item.num || item.hot || item.hot_value || '',
+        }))
+      }
+
+      // ===== 情况3：标准 { data: [...] } 结构 =====
+      if (Array.isArray(rawData?.data)) {
+        console.log('[Weibo] 使用标准 data 数组模式')
+        return rawData.data.map((item, index) => ({
+          id: item.id || item.mid || index,
+          title: item.word || item.title || item.desc || 'No Title',
+          url:
+            item.url ||
+            item.link ||
+            `https://s.weibo.com/weibo?q=${encodeURIComponent(item.word || item.title)}`,
+          hot: item.num || item.hot || item.hot_value || '',
+        }))
+      }
+
+      // ===== 兜底 =====
+      console.warn('[Weibo] 无法识别的数据结构', rawData)
+      return []
     },
   },
   {

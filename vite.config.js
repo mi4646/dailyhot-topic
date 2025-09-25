@@ -10,6 +10,22 @@ export default defineConfig({
     // strictPort: true, // 如果端口被占用则退出
     // 设置代理
     proxy: {
+      // https://m.weibo.cn/api/container/getIndex?containerid=106003type%3D25%26t%3D3%26disable_hot%3D1%26filter_type%3Drealtimehot&title=%E5%BE%AE%E5%8D%9A%E7%83%AD%E6%90%9C&extparam=filter_type%3Drealtimehot%26mi_cid%3D100103%26pos%3D0_0%26c_type%3D30%26display_time%3D1540538388&luicode=10000011&lfid=231583
+      '/weibo-hot-api': {
+        target: 'https://m.weibo.cn/api/',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/weibo-hot-api/, ''),
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setHeader(
+              'Referer',
+              'https://s.weibo.com/top/summary?cate=realtimehot'
+            )
+            proxyReq.setHeader('mweibo-pwa', '1')
+            proxyReq.setHeader('x-requested-with', 'XMLHttpRequest')
+          })
+        },
+      },
       '/news-hot-api': {
         target: 'https://news.zpa666.top/api/',
         changeOrigin: true,

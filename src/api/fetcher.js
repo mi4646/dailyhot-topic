@@ -90,15 +90,16 @@ async function fetchFromWebWithFallback(source, timeout = 10000) {
   for (const url of apis) {
     try {
       console.log(`📡 尝试请求 ${source.source} -> ${url}`)
+      const headers = {
+        Accept: 'application/json',
+        'Cache-Control': 'no-cache',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': 'true',
+      }
 
       const response = await axios.get(url, {
         timeout: timeout, // 使用自定义超时
-        headers: {
-          Accept: 'application/json',
-          'Cache-Control': 'no-cache',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': 'true',
-        },
+        headers: headers,
         // 可选：跨域时携带凭证
         withCredentials: true,
       })
