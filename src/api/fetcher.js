@@ -79,6 +79,25 @@ export async function fetchDataForSource(name) {
 }
 
 /**
+ * 根据 URL 获取请求优先级
+ * @param {*} url
+ * @returns
+ */
+function getPriorityFromUrl(url) {
+  if (url.startsWith('/60s-api/')) {
+    return 1 // 高质量
+  }
+  if (url.startsWith('/news-hot-api/')) {
+    return 2 // 中等
+  }
+  if (url.startsWith('/api-hot/')) {
+    return 10 // 低质量兜底
+  }
+  // 其他路径（如官方 API）设为最低优先级
+  return 99
+}
+
+/**
  * Web 环境下：对一个 source 的多个 API 地址进行 fallback 请求
  * @params source {Object} 数据源配置对象，包含 apis 数组和 name
  * @params timeout {Number} 每个请求的超时时间，单位毫秒，默认 10000ms
@@ -87,46 +106,89 @@ export async function fetchDataForSource(name) {
 async function fetchFromWebWithFallback(source, timeout = 10000) {
   const { apis, name } = source
 
-  for (const url of apis) {
-    try {
-      console.log(`📡 尝试请求 ${source.source} -> ${url}`)
-      const headers = {
-        Accept: 'application/json',
-        'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-      }
+  if (!Array.isArray(apis) || apis.length === 0) {
+    throw new Error(`[${name}] apis 配置错误`)
+  }
 
+  // === 自动为每个 URL 分配优先级并排序 ===
+  const apisWithPriority = apis.map((url) => ({
+    url,
+    priority: getPriorityFromUrl(url),
+  }))
+
+  apisWithPriority.sort((a, b) => a.priority - b.priority)
+
+  for (const { url, priority } of apisWithPriority) {
+    try {
+      console.log(`📡 [${name}] 尝试请求 (${priority}) ${url}`)
       const response = await axios.get(url, {
-        timeout: timeout, // 使用自定义超时
-        headers: headers,
-        // 可选：跨域时携带凭证
+        timeout,
+        headers: { Accept: 'application/json', 'Cache-Control': 'no-cache' },
         withCredentials: true,
       })
 
       const data = response.data
-
       if (data && (Array.isArray(data) || typeof data === 'object')) {
-        console.log(`✅ 成功从 ${url} 获取数据`)
+        console.log(`✅ [${name}] 成功从 ${url} 获取数据`)
         return data
       } else {
-        console.warn(`⚠️  ${url} 返回空或无效数据`, data)
-        continue
+        console.warn(`⚠️ [${name}] ${url} 返回无效数据`, data)
       }
     } catch (error) {
       const msg = error.response
-        ? `HTTP ${error.response.status}: ${error.response.statusText}`
+        ? `HTTP ${error.response.status}`
         : error.code === 'ECONNABORTED'
-          ? '请求超时'
+          ? '超时'
           : error.message
-
-      console.error(`❌ 请求失败 ${url} (${name}): ${error.message} - ${msg}`)
-      continue // 继续下一个 API
+      console.error(`❌ [${name}] 请求失败 (${priority}) ${url}: ${msg}`)
     }
   }
 
-  throw new Error(`所有 API 请求均失败：${source.source} (${name})`)
+  throw new Error(`[${name}] 所有 API 均失败`)
 }
+// async function fetchFromWebWithFallback(source, timeout = 10000) {
+//   const { apis, name } = source
+
+//   for (const url of apis) {
+//     try {
+//       console.log(`📡 尝试请求 ${source.source} -> ${url}`)
+//       const headers = {
+//         Accept: 'application/json',
+//         'Cache-Control': 'no-cache',
+//         'Access-Control-Allow-Origin': '*',
+//         'Access-Control-Allow-Credentials': 'true',
+//       }
+
+//       const response = await axios.get(url, {
+//         timeout: timeout, // 使用自定义超时
+//         headers: headers,
+//         // 可选：跨域时携带凭证
+//         withCredentials: true,
+//       })
+
+//       const data = response.data
+
+//       if (data && (Array.isArray(data) || typeof data === 'object')) {
+//         console.log(`✅ 成功从 ${url} 获取数据`)
+//         return data
+//       } else {
+//         console.warn(`⚠️  ${url} 返回空或无效数据`, data)
+//         continue
+//       }
+//     } catch (error) {
+//       const msg = error.response
+//         ? `HTTP ${error.response.status}: ${error.response.statusText}`
+//         : error.code === 'ECONNABORTED'
+//           ? '请求超时'
+//           : error.message
+
+//       console.error(`❌ 请求失败 ${url} (${name}): ${error.message} - ${msg}`)
+//       continue // 继续下一个 API
+//     }
+//   }
+
+//   throw new Error(`所有 API 请求均失败：${source.source} (${name})`)
+// }
 
 /**
  * Tauri 环境专用请求
