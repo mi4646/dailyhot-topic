@@ -100,7 +100,7 @@ const HotTopicCard = ({
                           : 'text-gray-500'
                     }
                     title={
-                      item.prevHot !== undefined
+                      item.prevHot !== undefined && item.hot !== item.prevHot
                         ? `从 ${formatHot(item.prevHot)} → ${formatHot(item.hot)}`
                         : undefined
                     }
