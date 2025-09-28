@@ -104,6 +104,7 @@ const HotTopicCard = ({
                         ? `从 ${formatHot(item.prevHot)} → ${formatHot(item.hot)}`
                         : undefined
                     }
+                    style={{ cursor: 'default' }} // 👈 关键：禁止 I 形光标
                   >
                     {formatHot(item.hot)}
                   </span>
