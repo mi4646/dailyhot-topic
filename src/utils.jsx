@@ -12,3 +12,16 @@ export const formatHot = (value) => {
 export const isTauri = () => {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 }
+
+// 获取和保存历史热度数据到 localStorage
+export const getHistoricalHotData = () => {
+  try {
+    return JSON.parse(localStorage.getItem('historicalHotData')) || {}
+  } catch {
+    return {}
+  }
+}
+
+export const saveHistoricalHotData = (data) => {
+  localStorage.setItem('historicalHotData', JSON.stringify(data))
+}

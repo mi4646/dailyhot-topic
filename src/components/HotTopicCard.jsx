@@ -79,7 +79,34 @@ const HotTopicCard = ({
 
                 <span className="ml-3 text-sm text-gray-500 flex-shrink-0">
                   <i className="fas fa-fire text-orange-400 mr-1"></i>
-                  {formatHot(item.hot)}
+                  {item.prevHot !== undefined ? (
+                    item.hot > item.prevHot ? (
+                      <span className="text-green-600 dark:text-green-400 text-xs">
+                        ▲{' '}
+                      </span>
+                    ) : item.hot < item.prevHot ? (
+                      <span className="text-red-500 dark:text-red-400 text-xs">
+                        ▼{' '}
+                      </span>
+                    ) : null // ← 不显示 •，直接空
+                  ) : null}{' '}
+                  {/* ← 无历史数据时，不显示任何图标 */}
+                  <span
+                    className={
+                      item.prevHot !== undefined && item.hot > item.prevHot
+                        ? 'text-green-600 dark:text-green-400'
+                        : item.prevHot !== undefined && item.hot < item.prevHot
+                          ? 'text-red-500 dark:text-red-400'
+                          : 'text-gray-500'
+                    }
+                    title={
+                      item.prevHot !== undefined
+                        ? `从 ${formatHot(item.prevHot)} → ${formatHot(item.hot)}`
+                        : undefined
+                    }
+                  >
+                    {formatHot(item.hot)}
+                  </span>
                 </span>
               </li>
             ))}

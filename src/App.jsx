@@ -8,6 +8,7 @@ import NotificationToast from './components/NotificationToast'
 import HotTopicDetailPage from './components/HotTopicDetailPage'
 import { originalSources as originalHotData } from './mock'
 import { fetchDataForSource } from './api/fetcher'
+import { getHistoricalHotData, saveHistoricalHotData } from './utils'
 
 function App() {
   const [hotData, setHotData] = useState([...originalHotData])
@@ -165,17 +166,37 @@ function App() {
     setHotDataErrors((prev) => ({ ...prev, [sourceName]: null }))
 
     try {
-      const data = await fetchDataForSource(source.name)
+      const rawData = await fetchDataForSource(source.name)
 
-      if (!data || data.length === 0) {
+      if (!rawData || rawData.length === 0) {
         setHotDataErrors((prev) => ({
           ...prev,
           [sourceName]: '暂无数据，请稍后重试',
         }))
       } else {
+        // 读取历史热度
+        const historical = getHistoricalHotData()
+        const sourceHistory = historical[sourceName] || {}
+
+        // 给每个 item 添加 prevHot（用于趋势判断）
+        const itemsWithPrev = rawData.map((item) => ({
+          ...item,
+          prevHot: sourceHistory[item.title], // 用标题作为 key
+        }))
+
+        // 更新历史数据（用新热度覆盖）
+        const newSourceHistory = {}
+        itemsWithPrev.forEach((item) => {
+          newSourceHistory[item.title] = item.hot
+        })
+        historical[sourceName] = newSourceHistory
+        saveHistoricalHotData(historical)
+
         setHotData((prev) =>
           prev.map((item) =>
-            item.source === sourceName ? { ...item, items: data } : item
+            item.source === sourceName
+              ? { ...item, items: itemsWithPrev }
+              : item
           )
         )
         setLoadedSources((prev) => ({ ...prev, [sourceName]: true }))
