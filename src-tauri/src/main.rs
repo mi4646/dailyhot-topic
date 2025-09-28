@@ -138,13 +138,22 @@ async fn fetch_hot_data(name: String) -> Result<String, String> {
         }
     }.into_iter().map(|s| s.trim().to_string()).collect(); // 统一处理前后空格
 
+    // === 新增：按优先级排序 ===
+    let mut urls_with_priority: Vec<(&String, u8)> = urls.iter()
+        .map(|url| (url, get_priority_from_url(url)))
+        .collect();
+    
+    urls_with_priority.sort_by_key(|(_, priority)| *priority);
+    let sorted_urls: Vec<&String> = urls_with_priority.into_iter().map(|(url, _)| url).collect();
+    // === 排序结束 ===
+
     let client = Client::builder()
         .timeout(Duration::from_secs(10))
         .build()
         .map_err(|e| format!("客户端构建失败: {}", e))?;
 
-    for url in &urls {
-        println!("📡 尝试请求 {} -> {}", name, url);
+    for url in sorted_urls {
+        println!("📡 尝试请求 {} -> {} (priority: {})", name, url, get_priority_from_url(url));
 
         match make_request(&client, &name, url).await {
             Ok(data) => {
@@ -244,4 +253,33 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri app");
+}
+
+// 根据 URL 判断优先级，数字越小优先级越高
+fn get_priority_from_url(url: &str) -> u8 {
+    let url = url.trim();
+
+    // 高质量源（优先尝试）
+    if url.contains("60s.viki.moe") {
+        return 1;
+    }
+    // 中等质量
+    if url.contains("news.zpa666.top") {
+        return 2;
+    }
+    // 低质量兜底
+    if url.contains("api-hot.imsyy.top") {
+        return 10;
+    }
+    // 官方 API 或其他（如 v2ex、github）
+    if url.contains("v2ex.com") || 
+       url.contains("trend.doforce.dpdns.org") || 
+       url.contains("zhihu.com") || 
+       url.contains("douban.com") || 
+       url.contains("cntv.cn") {
+        return 5; // 官方源，质量中等偏上
+    }
+
+    // 默认兜底
+    99
 }
