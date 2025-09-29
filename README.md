@@ -134,47 +134,49 @@ npm run tauri
 ## 📁 项目结构
 
 ```
-.
-├── src/                              # 源代码目录 (Web 前端)
-│   ├── App.jsx                       # 应用程序的根组件
-│   ├── assets/                       # 静态资源 (如图片、图标等)
+dailyhot-topic/
+├── src
+│   ├── api                        # API 请求相关
+│   │   └── fetcher.js            # 封装通用请求方法
+│   ├── App.jsx                   # 应用根组件
+│   ├── assets
 │   │   └── favicon.png
-│   ├── components/                   # 可复用的 React UI 组件
-│   │   ├── Skeleton.jsx              # 骨架屏组件
-│   │   ├── ErrorPage.jsx            # 错误页面组件
-│   │   ├── Header.jsx               # 网站或应用的头部导航组件
-│   │   ├── HotTopicCard.jsx         # 热门话题卡片组件
-│   │   ├── HotTopicDetailPage.jsx   # 热门话题详情页组件
-│   │   ├── LazyLoadWrapper.jsx      # 图片或组件的懒加载包装器
-│   │   └── NotificationToast.jsx    # 通知提示框组件
-│   ├── index.css                    # 全局样式文件
-│   ├── main.jsx                     # 应用程序的入口文件
-│   ├── mock.jsx                     # 本地数据模拟 (用于开发测试)
-│   └── utils.jsx                    # 工具函数库
-│
-├── src-tauri/                       # Tauri 后端 Rust 代码目录
-│   ├── build.rs                     # Tauri 构建脚本
-│   ├── capabilities/                # Tauri 权限配置
+│   ├── components                # 页面与通用组件
+│   │   ├── ErrorPage.jsx         # 错误状态页
+│   │   ├── Header.jsx            # 顶部导航栏
+│   │   ├── HotTopicCard.jsx      # 热点卡片
+│   │   ├── HotTopicDetailPage.jsx# 热点详情页
+│   │   ├── LazyLoadWrapper.jsx   # 懒加载容器
+│   │   ├── NotificationToast.jsx # 消息通知组件
+│   │   ├── ProxyImage.jsx        # 图片代理处理
+│   │   ├── SettingsPage.jsx      # 设置页面
+│   │   └── Skeleton.jsx          # 骨架屏
+│   ├── index.css
+│   ├── main.jsx                  # 前端入口
+│   ├── mock.jsx                  # 数据源 mock 数据
+│   └── utils.jsx                 # 工具函数
+├── src-tauri                     # Tauri 桌面端相关
+│   ├── build.rs
+│   ├── capabilities
 │   │   └── default.json
-│   ├── Cargo.toml                   # Rust 项目依赖与配置文件
-│   ├── icons/                       # 应用图标
+│   ├── Cargo.toml                # Rust 项目配置
+│   ├── icons
 │   │   └── favicon.svg
-│   ├── packages/                    # 平台特定构建资源
-│   │   └── windows/                 # Windows 平台安装脚本
+│   ├── packages
+│   │   └── windows
 │   │       └── installer.nsi
-│   ├── src/                         # Rust 源代码
-│   │   ├── lib.rs                   # Tauri 命令定义库
-│   │   └── main.rs                  # Tauri 应用入口点
-│   └── tauri.conf.json              # Tauri 主配置文件 (应用信息、构建选项等)
-│
-├── eslint.config.js                  # ESLint 代码规范配置
-├── index.html                       # HTML 模板文件
-├── package.json                     # Node.js 项目依赖与脚本
-├── package-lock.json                # 依赖版本锁定文件
-├── postcss.config.js                # PostCSS 配置 (通常用于 Tailwind CSS)
-├── README.md                        # 项目说明文档 (本文件)
-├── tailwind.config.js               # Tailwind CSS 配置文件
-└── vite.config.js                   # Vite 构建工具配置文件
+│   ├── src
+│   │   ├── lib.rs
+│   │   └── main.rs               # Tauri 主入口
+│   └── tauri.conf.json           # Tauri 配置
+├── tailwind.config.js            # Tailwind 配置
+├── eslint.config.js
+├── index.html
+├── package.json                 # 前端依赖
+├── package-lock.json
+├── postcss.config.js
+├── README.md
+└── vite.config.js               # Vite 配置
 
 ```
 
